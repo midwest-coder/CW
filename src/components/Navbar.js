@@ -1,31 +1,33 @@
 import React, { Component } from 'react'
-import farmer from '../farmer.png'
+import logo from '../images/cryptoWars.png'
+import { Navbar, Nav, FormControl, Form, Button } from 'react-bootstrap'
 
-class Navbar extends Component {
+class TopNav extends Component {
 
   render() {
     return (
-      <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-        <a
-          className="navbar-brand col-sm-3 col-md-2 mr-0"
-          href="http://www.dappuniversity.com/bootcamp"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src={farmer} width="30" height="30" className="d-inline-block align-top" alt="" />
-          &nbsp; DApp Token Farm
-        </a>
-
-        <ul className="navbar-nav px-3">
-          <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
-            <small className="text-secondary">
-              <small id="account">{this.props.account}</small>
-            </small>
-          </li>
-        </ul>
-      </nav>
+      <Navbar bg="dark" variant="dark" className="align-baseline">
+      <Navbar.Brand href="#home">
+        <img src={logo} width="25%" height="25%" className="d-inline-block" alt="" />
+      </Navbar.Brand>
+      <Nav className="mr-auto">
+        <Nav.Link href="#home">Home</Nav.Link>
+        <Nav.Link href="#features">Features</Nav.Link>
+        <Nav.Link href="#pricing">Pricing</Nav.Link>
+      </Nav>
+      <div className="ml-auto">
+      <Navbar.Text>
+        <small>Username:</small>
+        <span className="text-light mx-1">{this.props.user.username}</span>
+        <small className="text-light ml-2 mr-1">Battle Coins:</small>
+        <span className="mr-5">{this.props.user.coinBalance}</span>
+      </Navbar.Text>
+      <Button variant="outline-info" className="mx-1">Buy</Button>
+      <Button variant="outline-primary" className="mx-1">Sell</Button>
+      </div>
+    </Navbar>
     );
   }
 }
 
-export default Navbar;
+export default TopNav;
