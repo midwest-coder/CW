@@ -47,7 +47,7 @@ contract BSBack {
         daiToken.transferFrom(msg.sender, address(this), _amount);
 
         // Update staking balance
-        players[msg.sender].coinBalance = players[msg.sender].coinBalance + _amount;
+        players[msg.sender].coinBalance += _amount;
     }
 
     // Unstaking Tokens (Withdraw)

@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import Web3 from 'web3'
 import BSBack from '../abis/BSBack.json'
 import DaiToken from '../abis/DaiToken.json'
-import Navbar from './Navbar'
 import Signup from './Signup'
 import Loading from './Loading'
 import Main from './Main'
 import './App.css'
-import TopNav from './Navbar'
+import Navbar from './Navbar'
+import { Container } from '@material-ui/core'
 
 class App extends Component {
 
@@ -65,7 +65,8 @@ class App extends Component {
   }
 
   async loadUser() {
-    const username = await this.state.bsBack.methods.getUsername(this.state.user.account).call();
+    const username = await this.state.bsBack.methods.getUsername(this.state.user.account).call()
+    this.calculateKDA()
     if(username == '') {
 
     }
@@ -81,13 +82,17 @@ class App extends Component {
 
   buyCoins = (amount) => {
     this.setState({ loading: true })
+    window.alert(amount)
     this.state.daiToken.methods.approve(this.state.bsBack._address, amount).send({ from: this.state.user.account }).on('transactionHash', (hash) => {
       this.state.bsBack.methods.buyCoins(amount).send({ from: this.state.user.account }).on('transactionHash', (hash) => {
         this.setState({ loading: false })
+      }).catch((error) => {
+        this.setState({ loading: false })
+        window.alert(error.message)
       })
     }).catch((error) => {
       this.setState({ loading: false })
-      window.alert(error)
+      window.alert(error.message)
     })
   }
 
@@ -97,9 +102,14 @@ class App extends Component {
       this.setState({ loading: false })
     }).catch((error) => {
       this.setState({ loading: false })
-      window.alert(error)
+      window.alert(error.message)
     })
   }
+
+  calculateKDA = () => {
+    const kda = this.state.kills / this.state.deaths;
+    this.setState({ kda })
+  } 
 
   constructor(props) {
     super(props)
@@ -107,7 +117,10 @@ class App extends Component {
       user: {
         username: 'kstamps2484',
         account: '0x0',
-        coinBalance: '0'
+        kills: '1',
+        deaths: '2',
+        kda: '0',
+        balance: '0'
       },
       daiTokenBalance: '0',
       daiToken: {},
@@ -123,7 +136,7 @@ class App extends Component {
       content = <Signup addUser = {this.addUser}></Signup>
     }
     if(this.state.loading) {
-      content = <Loading></Loading>
+      content = <Loading loading={this.state.loading}></Loading>
     } else {
       content = <Main
         user={this.state.user}
@@ -133,24 +146,12 @@ class App extends Component {
     }
 
     return (
-      <div>
-        <TopNav user={this.state.user} />
-        <div className="container-fluid mt-5">
-          <div className="row">
-            <main role="main" className="col-lg-12 ml-auto mr-auto" style={{ maxWidth: '600px' }}>
-              <div className="content mr-auto ml-auto">
-                <a
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                </a>
-                {content}
-              </div>
-            </main>
-          </div>
-        </div>
-      </div>
+      <React.Fragment>
+        <Navbar user={this.state.user} />
+          <Container>
+            {content}
+          </Container>
+        </React.Fragment>
     );
   }
 }
