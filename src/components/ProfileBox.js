@@ -101,7 +101,7 @@ function ProfileBox(props) {
                     size="large"
                     color="primary"
                     variant="contained"
-                    href="../game/test.txt"
+                    href="./Navbar.js"
                     download>    
                         Download Test
                     </Button>
