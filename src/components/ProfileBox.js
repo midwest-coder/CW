@@ -60,9 +60,6 @@ function ProfileBox(props) {
                         <Grid item xs={4}>
                             <Card className={classes.statsBox}>
                                 <Typography variant="subtitle1" className={classes.text} align="left">
-                                    Coins
-                                </Typography>
-                                <Typography variant="subtitle1" className={classes.text} align="left">
                                     Kills
                                 </Typography>
                                 <Typography variant="subtitle1" className={classes.text} align="left">
@@ -73,11 +70,6 @@ function ProfileBox(props) {
                         <Grid item xs={8}>
                             <Card className={classes.statsBox}>
                                 <Grid container>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" className={classes.text}>
-                                        <span className={classes.userData}>{user.balance}</span>
-                                        </Typography>
-                                    </Grid>
                                     <Grid item xs={12}>
                                         <Typography variant="subtitle1" className={classes.text}>
                                         <span className={classes.userData}>{user.kills}</span>
@@ -94,17 +86,32 @@ function ProfileBox(props) {
                     </Grid>
                 </Grid>
                 <Grid item xs={12} md={4}>
+                    <Card className={classes.statsBox}>
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle1" className={classes.text}>
+                                It works
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button
+                            className={classes.button}
+                            endIcon={<CloudDownload />} 
+                            size="large"
+                            variant="contained"
+                            href="../game/Battle_Royal_V0.1.5.zip"
+                            download>    
+                                Download Game
+                            </Button>
+                        </Grid>
+                    </Card>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <Button
-                    endIcon={<CloudDownload />}
-                    size="large"
-                    color="primary"
-                    variant="contained"
-                    href="./Navbar.js"
-                    download>    
-                        Download Test
-                    </Button>
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle1" className={classes.text}>
+                            It works
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
                     <Button
                     className={classes.button}
                     endIcon={<CloudDownload />} 
@@ -114,6 +121,7 @@ function ProfileBox(props) {
                     download>    
                         Download Game
                     </Button>
+                    </Grid>
                 </Grid>
             </Grid>
         </Card>

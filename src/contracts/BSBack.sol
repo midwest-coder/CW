@@ -16,7 +16,7 @@ contract BSBack {
         string password;
         uint kills;
         uint deaths;
-        uint coinBalance;
+        uint balance;
     }
     
     mapping(address => Player) internal players;
@@ -32,11 +32,11 @@ contract BSBack {
         _;
     }
 
-    function addPlayer(string calldata _username) external {
+    function addUser(string calldata _username) external {
         players[msg.sender].username = _username;
         players[msg.sender].kills = 0;
         players[msg.sender].deaths = 0;
-        players[msg.sender].coinBalance = 0;
+        players[msg.sender].balance = 0;
     }
 
     function buyCoins(uint _amount) external {
@@ -47,13 +47,13 @@ contract BSBack {
         daiToken.transferFrom(msg.sender, address(this), _amount);
 
         // Update staking balance
-        players[msg.sender].coinBalance += _amount;
+        players[msg.sender].balance += _amount;
     }
 
     // Unstaking Tokens (Withdraw)
     function sellCoins(uint _amount) external {
         // Fetch staking balance
-        uint balance = players[msg.sender].coinBalance;
+        uint balance = players[msg.sender].balance;
 
         // Require amount greater than 0
         require(balance > _amount, "Cannot sell more coins than owned");
@@ -62,20 +62,32 @@ contract BSBack {
         daiToken.transfer(msg.sender, _amount);
 
         // Reset staking balance
-        players[msg.sender].coinBalance = balance - _amount;
+        players[msg.sender].balance = balance - _amount;
     }
 
     function playGame(address _account, uint _cost) external  {
-        uint balance = players[_account].coinBalance;
+        uint balance = players[_account].balance;
         require(balance > _cost, "Not enough coins to play");
-        players[_account].coinBalance = balance - _cost;
+        players[_account].balance = balance - _cost;
     }
 
     function collectWinnings(address _account, uint _amount) external onlyAdmin() {
-        players[_account].coinBalance += _amount;
+        players[_account].balance += _amount;
     }
 
     function getUsername(address _account) external returns(string memory){
         return players[_account].username;
+    }
+
+    function getBalance(address _account) external returns(uint){
+        players[msg.sender].balance = 0;
+    }
+
+    function getKills(address _account) external returns(uint){
+        players[msg.sender].kills = 0;
+    }
+
+    function getDeaths(address _account) external returns(uint){
+        players[msg.sender].deaths = 0;
     }
 }
