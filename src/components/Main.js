@@ -1,32 +1,15 @@
-import React, { useState } from 'react'
-import CoinTransfer from './CoinTransfer'
+import React from 'react'
 import Card from '@material-ui/core/Card'
 import ProfileBox from './ProfileBox'
-import { makeStyles } from '@material-ui/core/styles'
+import GameBox from './GameBox'
 
-import { grey } from '@material-ui/core/colors'
+function Main() {
 
-const useStyles = makeStyles({
-    card: {
-        background: grey[900]
-    }
-})
-
-function Main(props) {
-  const [user, setUser] = useState(props.user);
-
-  const buyCoins = (amount) => {
-    window.alert(amount)
-    // props.buyCoins(amount)
-  }
-
-  const sellCoins = (amount) => {
-    // props.sellCoins(amount)
-  }
     return (
-      <Card id="content" className="mt-3">
-        <ProfileBox user={user} />
-      </Card>
+      <React.Fragment>
+        <ProfileBox />
+        <GameBox />
+      </React.Fragment>
     );
 }
 

@@ -1,9 +1,7 @@
 import logo from '../images/cryptoWars.png'
 import React from 'react'
-import { AppBar, IconButton, Toolbar, Button, Grid } from '@material-ui/core'
+import { AppBar, IconButton, Toolbar } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-
-import { grey } from '@material-ui/core/colors'
 
 const useStyles = makeStyles({
   appbar: {
@@ -22,7 +20,7 @@ function Navbar() {
         <AppBar position="static" className={classes.appbar}>
               <Toolbar className="justify-content-center">
                 <IconButton>
-                  <img src={logo} className={classes.logo}/>
+                  <img alt="Crypto Wars" src={logo} className={classes.logo}/>
                 </IconButton>
               </Toolbar>
         </AppBar>

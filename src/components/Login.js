@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 })
 )
 
- function Signup(props){
+ function Login(props){
   const classes = useStyles()
   const authContext = useContext(AuthContext)
   const [usernameError, setUsernameError] = useState(false)
@@ -47,48 +47,15 @@ const useStyles = makeStyles((theme) => ({
   const [dialogTitle, setDialogTitle] = useState('')
   const [userErrMsg, setUserErrMsg] = useState('')
   const [passErrMsg, setPassErrMsg] = useState('')
-  const [emailValue, setEmailValue] = useState('')
   const [userValue, setUserValue] = useState('')
   const [passValue, setPassValue] = useState('')
 
-  const checkEmail = (value) => {
-    setEmailValue(value)
-  }
-
   const checkUsername = (value) => {
     setUserValue(value)
-    if(value.length < 6) {
-      setUserErrMsg('Must input at least 6 characters')
-      setUsernameError(true)
-    } else if(value.length > 25) {
-      setUserErrMsg('Must be less than 25 characters')
-      setUsernameError(true)
-    } else {
-      // Auth.checkUser(value).then((data) => {
-      //   const { isTaken } = data
-      //   if(isTaken) {
-      //     setUserErrMsg('Username already taken')
-      //     setUsernameError(true)
-      //   } else {
-      //   }
-      // })
-      setUsernameError(false)
-      setUserErrMsg('')
-    }
   }
 
   const checkPassword = (value) => {
     setPassValue(value)
-    if(value.length < 6) {
-      setPassErrMsg('Must input at least 6 characters')
-      setPassError(true)
-    } else if(value.length > 30) {
-      setPassErrMsg('Must be less than 30 characters')
-      setPassError(true)
-    } else {
-      setPassError(false)
-      setUserErrMsg('')
-    }
   }
 
   const handleDialogClose = () => {
@@ -97,14 +64,10 @@ const useStyles = makeStyles((theme) => ({
 
   const submitData = (e) => {
     e.preventDefault()
-    if(emailValue === '' && userValue === '' && passValue === '') {
+    if(userValue === '' && passValue === '') {
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill it out at all ya goof! Do us a solid and get that all filled out")
-    } else if(emailValue === '') {
-      setDialogOpen(true)
-      setDialogTitle('Hey Wait')
-      setDialogText("You didn't even fill out your email ya goof! Do us a solid and get that filled out")
     } else if(userValue === '') {
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
@@ -126,28 +89,28 @@ const useStyles = makeStyles((theme) => ({
       setDialogTitle('Uh Oh')
       setDialogText("Looks like there's a tiny issue with your password. Do us a favor and give it a quick look over.")
     } else {
-      const user = {username: userValue, password: passValue, email: emailValue, role: 'user', balance: '0'}
+        const user = {username: userValue, password: passValue}
       // Auth.register(user).then((data) => {
       //   if(!data.msgError)
-          Auth.register(user).then((data) => {
-            const { msgError, msgBody } = data.message
-            if(!msgError){
-              Auth.login(user).then((data) => {
-                const { user, isAuthenticated, message } = data
-                authContext.setUser(user)
-                authContext.setIsAuthenticated(isAuthenticated)
-                // if(isAuthenticated)
-                // alert("Account successfully created and logged in")
-              })
-            } else 
-                alert(msgBody)
-          })
+        authContext.setIsLoaded(false)
+        Auth.login(user).then((data) => {
+        const { user, isAuthenticated, message } = data
+        authContext.setUser(user)
+        authContext.setIsAuthenticated(isAuthenticated)
+        if(!isAuthenticated){
+            setDialogOpen(true)
+            setDialogTitle('Uh Oh')
+            setDialogText("Looks like that username and password was invalid. Give it another try")
+        }
+        authContext.setIsLoaded(false)
+        })
       //     else
       //       alert(`Error occured registering user`)
       // })
     }
   }
 
+  
   const switchPanel = () => {
     props.switchPanel()
   }
@@ -179,25 +142,9 @@ const useStyles = makeStyles((theme) => ({
           <Grid item xs={12}>
             <Card className={classes.card}>
               {/* <Typography variant="h4" className={classes.h4} align="center">
-                Sign Up
+                Log In
               </Typography> */}
               <form onSubmit={(e) => {submitData(e)}}>
-                <div>
-                  <TextField 
-                    id="standard-basic" 
-                    label="Email"
-                    type="email"
-                    onInput={(e) => {checkEmail(e.target.value)}}
-                    autoComplete="off"
-                    className={classes.textField}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Email />
-                        </InputAdornment>
-                      ),
-                    }}/>
-                </div>
                 <div>
                   <TextField 
                     id="standard-basic" 
@@ -238,7 +185,7 @@ const useStyles = makeStyles((theme) => ({
                     variant="contained" 
                     type="submit"
                     fullWidth>
-                      Sign Up
+                      Log In
                   </Button>
               </form>
               <Typography type="subtitile1">or</Typography>
@@ -246,7 +193,7 @@ const useStyles = makeStyles((theme) => ({
                     className={classes.purple} 
                     variant="contained" 
                     onClick={() => switchPanel()}>
-                Log In
+                Sign Up
               </Button>
             </Card>
           </Grid>
@@ -255,4 +202,4 @@ const useStyles = makeStyles((theme) => ({
     );
 }
 
-export default Signup;
+export default Login;
