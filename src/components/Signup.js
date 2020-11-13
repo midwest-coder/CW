@@ -10,13 +10,13 @@ const useStyles = makeStyles((theme) => ({
   card: {
       background: 'linear-gradient(45deg, #113C70, #3D0757)',
       marginTop: 40,
-      padding: 100,
+      padding: 80,
       paddingTop: 40,
+      paddingBottom: 40
   },
   h4: {
     color: 'white',
-    textShadow: '2px 2px black',
-    marginBottom: 20,
+    textShadow: '2px 2px black'
   },
   textField: {
     marginTop: 10,
@@ -28,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
   },
   purple: {
       background: 'linear-gradient(45deg, #113C70, #3D0757)',
-      color: grey[100]
+      color: grey[100],
+      marginTop: 10
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -50,6 +51,10 @@ const useStyles = makeStyles((theme) => ({
   const [emailValue, setEmailValue] = useState('')
   const [userValue, setUserValue] = useState('')
   const [passValue, setPassValue] = useState('')
+
+  const setLoading = (value) => {
+    props.setLoading(value)
+  }
 
   const checkEmail = (value) => {
     setEmailValue(value)
@@ -129,6 +134,7 @@ const useStyles = makeStyles((theme) => ({
       const user = {username: userValue, password: passValue, email: emailValue, role: 'user', balance: '0'}
       // Auth.register(user).then((data) => {
       //   if(!data.msgError)
+      setLoading(true)
           Auth.register(user).then((data) => {
             const { msgError, msgBody } = data.message
             if(!msgError){
@@ -142,6 +148,7 @@ const useStyles = makeStyles((theme) => ({
             } else 
                 alert(msgBody)
           })
+        setLoading(false)
       //     else
       //       alert(`Error occured registering user`)
       // })
@@ -178,9 +185,9 @@ const useStyles = makeStyles((theme) => ({
         alignItems="center">
           <Grid item xs={12}>
             <Card className={classes.card}>
-              {/* <Typography variant="h4" className={classes.h4} align="center">
+              <Typography variant="h4" className={classes.h4} align="center">
                 Sign Up
-              </Typography> */}
+              </Typography>
               <form onSubmit={(e) => {submitData(e)}}>
                 <div>
                   <TextField 
@@ -241,11 +248,12 @@ const useStyles = makeStyles((theme) => ({
                       Sign Up
                   </Button>
               </form>
-              <Typography type="subtitile1">or</Typography>
+              <Typography type="subtitile1" align="center" className={classes.textField}>or</Typography>
               <Button
                     className={classes.purple} 
                     variant="contained" 
-                    onClick={() => switchPanel()}>
+                    onClick={() => switchPanel()}
+                    fullWidth>
                 Log In
               </Button>
             </Card>

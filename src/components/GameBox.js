@@ -1,39 +1,50 @@
-import { Card, Grid, Typography } from '@material-ui/core';
-import React , { useContext } from 'react'
-import { AuthContext } from '../context/AuthContext'
+import { Box, Card, CardActions, CardContent, CardMedia, Divider, Grid, Typography } from '@material-ui/core';
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
-import { grey, cyan, lightBlue } from '@material-ui/core/colors'
+import { grey, cyan } from '@material-ui/core/colors'
 import { CloudDownload } from '@material-ui/icons'
+import gameScreenshot from '../images/ew-screenshot-crop.png'
 
 const useStyles = makeStyles({
     card: {
-        marginTop: 20,
         background: 'linear-gradient(45deg, #113C70, #3D0757)',
     },
     statsBox: {
         background:'black',
         margin: 10
     },
-    username: {
-        color: grey[100],
-        padding: 15
-    },
-    userData: {
-        color: grey[100],
-    },
-    text: {
-        color: cyan[800],
+    gamePreview: {
+        width: 250,
+        height: 250,
         padding: 10
     },
-    userText: {
-        color: lightBlue[900],
-        marginLeft: 10,
-        marginRight: 10,
+    gamePreviewBox: {
+        background: 'linear-gradient(45deg, #113C70, #3D0757)',
+    },
+    gamePreviewText: {
+        color: grey[300],
+        padding: 10,
+        paddingTop: 0
+    },
+    title: {
+        color: grey[100],
+        padding: 10
+    },
+    text: {
+        color: grey[400],
+        fontSize: 14,
+        padding: 10
     },
     button: {
         background: 'linear-gradient(45deg, #32a883, #3290a8)',
-        color: grey[100]
+        color: grey[100],
+        marginTop: 20,
+        marginBottom: 5
+    },
+    center: {
+        display: 'flex',
+        justifyContent: 'center'
     },
     a: {
         textDecoration: 'none'
@@ -42,68 +53,59 @@ const useStyles = makeStyles({
 
 function Gamebox() {
     const classes = useStyles()
-    const { user } = useContext(AuthContext)
     return(
         <Card className={classes.card}>
             <Grid container>
-                <Grid item xs={12} md={3}>
-                    <Grid container>
-                        <Grid item xs={4}>
-                            <Card className={classes.statsBox}>
-                                <Typography variant="subtitle1" className={classes.text} align="left">
-                                    Kills
-                                </Typography>
-                                <Typography variant="subtitle1" className={classes.text} align="left">
-                                    Deaths
-                                </Typography>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={8}>
-                            <Card className={classes.statsBox}>
-                                <Grid container>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" className={classes.text}>
-                                        {/* <span className={classes.userData}>{user.balance}</span> */}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Typography variant="subtitle1" className={classes.text}>
-                                        {/* <span className={classes.userData}>{user.balance}</span> */}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                            </Card>
-                        </Grid>
-                    </Grid>
-                </Grid>
                 <Grid item xs={12} md={4}>
                     <Card className={classes.statsBox}>
-                        <Grid item xs={12}>
-                            <Typography variant="subtitle1" className={classes.text}>
-                                It works
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                        </Grid>
+                        <Typography variant="h6" className={classes.title} align="center">
+                            Titles
+                        </Typography>
+                    </Card>
+                    <Card className={classes.statsBox}>
+                        <Typography align="center">
+                            <img src={gameScreenshot} title="Game Screenshot" className={classes.gamePreview}/>
+                        </Typography>
                     </Card>
                 </Grid>
-                <Grid item xs={12} md={4}>
-                    <Grid item xs={12}>
-                        <Typography variant="subtitle1" className={classes.text}>
-                            It works
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                    <Button
-                    className={classes.button}
-                    endIcon={<CloudDownload />} 
-                    size="large"
-                    variant="contained"
-                    href="game/Battle_Royal_V0.1.5.zip"
-                    download="Battle-Royal.zip">    
-                        Download Game
-                    </Button>
-                    </Grid>
+                <Grid item xs={12} md={8}>
+                    <Card className={classes.statsBox}>
+                        <CardContent>
+                            <Grid container>
+                                <Grid item xs={12} sm={7}>
+                                    <Typography variant="h6" className={classes.title} align="center">
+                                        Endless War
+                                    </Typography>
+                                    <Typography variant="subtitle1" className={classes.text} align="center">
+                                        For anyone who enjoys old school shooters, like Contra, this game is made for you.
+                                        Endless War is a blend of a sandbox shooter meets io. 
+                                        It will cost credits to get into the game and each kill will earn you a credit.
+                                        A simple game to pick up but still brings loads of fun and potential profits.
+                                        Download today and see if you have what it takes to battle the Endless War.
+                                    </Typography>
+                                    <Typography align="center">
+                                        <Button
+                                            className={classes.button}
+                                            endIcon={<CloudDownload />} 
+                                            size="large"
+                                            variant="contained"
+                                            href="game/Battle_Royal_V0.1.5.zip"
+                                            download="Battle-Royal.zip">    
+                                                Download Game
+                                        </Button>
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={5} className={classes.center}>
+                                    <Card className={classes.gamePreviewBox}>
+                                        <img src={gameScreenshot} title="Game Screenshot" className={classes.gamePreview}/>
+                                        <Typography variant="subtitle2" className={classes.gamePreviewText} align="center">
+                                            Gameplay
+                                        </Typography>
+                                    </Card>
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
                 </Grid>
             </Grid>
         </Card>

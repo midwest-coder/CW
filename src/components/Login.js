@@ -10,13 +10,13 @@ const useStyles = makeStyles((theme) => ({
   card: {
       background: 'linear-gradient(45deg, #113C70, #3D0757)',
       marginTop: 40,
-      padding: 100,
+      padding: 80,
       paddingTop: 40,
+      paddingBottom: 40
   },
   h4: {
     color: 'white',
-    textShadow: '2px 2px black',
-    marginBottom: 20,
+    textShadow: '2px 2px black'
   },
   textField: {
     marginTop: 10,
@@ -28,11 +28,15 @@ const useStyles = makeStyles((theme) => ({
   },
   purple: {
       background: 'linear-gradient(45deg, #113C70, #3D0757)',
-      color: grey[100]
+      color: grey[100],
+      marginTop: 10
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  margin: {
+    marginTop: 60,
   }
 })
 )
@@ -40,15 +44,15 @@ const useStyles = makeStyles((theme) => ({
  function Login(props){
   const classes = useStyles()
   const authContext = useContext(AuthContext)
-  const [usernameError, setUsernameError] = useState(false)
-  const [passError, setPassError] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogText, setDialogText] = useState('')
   const [dialogTitle, setDialogTitle] = useState('')
-  const [userErrMsg, setUserErrMsg] = useState('')
-  const [passErrMsg, setPassErrMsg] = useState('')
   const [userValue, setUserValue] = useState('')
   const [passValue, setPassValue] = useState('')
+
+  const setLoading = (value) => {
+      props.setLoading(value)
+  }
 
   const checkUsername = (value) => {
     setUserValue(value)
@@ -76,23 +80,11 @@ const useStyles = makeStyles((theme) => ({
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill out your password ya goof! Do us a solid and get that filled out")
-    } else if(usernameError && passError) {
-      setDialogOpen(true)
-      setDialogTitle('Uh Oh')
-      setDialogText("Looks like there's a tiny issue with your username and password. Do us a favor and give it a quick look over.")
-    } else if(usernameError) {
-      setDialogOpen(true)
-      setDialogTitle('Uh Oh')
-      setDialogText("Looks like there's a tiny issue with your username. Do us a favor and give it a quick look over.")
-    } else if(passError) {
-      setDialogOpen(true)
-      setDialogTitle('Uh Oh')
-      setDialogText("Looks like there's a tiny issue with your password. Do us a favor and give it a quick look over.")
     } else {
         const user = {username: userValue, password: passValue}
       // Auth.register(user).then((data) => {
       //   if(!data.msgError)
-        authContext.setIsLoaded(false)
+        setLoading(true)
         Auth.login(user).then((data) => {
         const { user, isAuthenticated, message } = data
         authContext.setUser(user)
@@ -102,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
             setDialogTitle('Uh Oh')
             setDialogText("Looks like that username and password was invalid. Give it another try")
         }
-        authContext.setIsLoaded(false)
+        setLoading(false)
         })
       //     else
       //       alert(`Error occured registering user`)
@@ -141,20 +133,18 @@ const useStyles = makeStyles((theme) => ({
         alignItems="center">
           <Grid item xs={12}>
             <Card className={classes.card}>
-              {/* <Typography variant="h4" className={classes.h4} align="center">
+              <Typography variant="h4" className={classes.h4} align="center">
                 Log In
-              </Typography> */}
+              </Typography>
               <form onSubmit={(e) => {submitData(e)}}>
                 <div>
                   <TextField 
                     id="standard-basic" 
                     label="Username"
                     type="text"
-                    helperText={userErrMsg}
-                    error={usernameError}
                     onInput={(e) => {checkUsername(e.target.value)}}
                     autoComplete="off"
-                    className={classes.textField}
+                    className={classes.margin}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -168,8 +158,6 @@ const useStyles = makeStyles((theme) => ({
                     id="standard-basic" 
                     label="Password" 
                     type="password"
-                    helperText={passErrMsg}
-                    error={passError}
                     onInput={(e) => {checkPassword(e.target.value)}}
                     className={classes.textField}
                     InputProps={{
@@ -188,11 +176,12 @@ const useStyles = makeStyles((theme) => ({
                       Log In
                   </Button>
               </form>
-              <Typography type="subtitile1">or</Typography>
+              <Typography type="subtitile1" align="center" className={classes.textField}>or</Typography>
               <Button
                     className={classes.purple} 
                     variant="contained" 
-                    onClick={() => switchPanel()}>
+                    onClick={() => switchPanel()}
+                    fullWidth>
                 Sign Up
               </Button>
             </Card>

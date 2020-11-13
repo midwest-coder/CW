@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Signup from './Signup'
 import Login from './Login'
 
-function FrontPage() {
+function FrontPage(props) {
     const [toggle, setToggle] = useState(true)
     let content
 
@@ -11,10 +11,14 @@ function FrontPage() {
         setToggle(temp)
     }
 
+    const setLoading = (value) => {
+        props.setLoading(value)
+    }
+
     if(toggle)
-        content = <Login switchPanel={switchPanel}/>
+        content = <Login setLoading={setLoading} switchPanel={switchPanel}/>
     else
-        content = <Signup switchPanel={switchPanel}/>
+        content = <Signup setLoading={setLoading} switchPanel={switchPanel}/>
 
 
     return (

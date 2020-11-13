@@ -4,7 +4,10 @@ import { Button, Card, Grid, Typography, Dialog, DialogTitle, DialogContent,
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types';
 import { grey, lightBlue, purple } from '@material-ui/core/colors'
-import { AttachMoney, CompareArrows, Face, MonetizationOn } from '@material-ui/icons'
+import { AttachMoney, CompareArrows, Face, MeetingRoom, MonetizationOn } from '@material-ui/icons'
+import Web3 from 'web3'
+import BSBack from '../abis/BSBack.json'
+import DaiToken from '../abis/DaiToken.json'
 import daiLogo from '../images/dai.png'
 import Auth from '../services/Auth'
 import { AuthContext } from '../context/AuthContext'
@@ -44,11 +47,12 @@ function a11yProps(index) {
 
 const useStyles = makeStyles({
     card: {
-        marginTop: 30
+        background: 'black',
+        marginTop: 5,
+        marginBottom: 5,
+        padding: 15
     },
     userBox: {
-        background: 'black',
-        padding: 15
     },
     username: {
         color: grey[100],
@@ -63,7 +67,10 @@ const useStyles = makeStyles({
     },
     transferButton: {
         background: 'linear-gradient(45deg, #32a883, #3290a8)',
-        color: grey[100]
+        color: grey[100],
+        marginRight: 15,
+        marginLeft: 20
+
     },
     button: {
         marginTop: 20,
@@ -92,9 +99,9 @@ const useStyles = makeStyles({
     }
 })
 
-function ProfileBox() {
+function ProfileBox(props) {
     const classes = useStyles()
-    const { user,setUser, isAuthenticated, setIsAuthenticated, setIsLoaded } = useContext(AuthContext)
+    const { user,setUser, isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
     const [dialogOpen, setDialogOpen] = useState(false)
     const [inputError, setInputError] = useState(false)
     const [disableButton, setDisableButton] = useState(false)
@@ -103,16 +110,33 @@ function ProfileBox() {
     const [tabValue, setTabValue] = useState(0);
     const [buyAmount, setBuyAmount] = useState(0);
     const [sellAmount, setSellAmount] = useState(0);
+    const [account, setAccount] = useState('0')
+    const [accountDisplay, setAccountDisplay] = useState('0')
+    const [daiToken, setDaiToken] = useState({})
+    const [bsBack, setBSBack] = useState({})
+    const tokenAddress = ''
+    const admin = '0x030a2fDC69431eD2b96E9651B0e10AD12a231638'
+
+    const setLoading = (value) => {
+      props.setLoading(value)
+    }
+
+    const setUsername = () => {
+      if(user.username.length > 9)
+        return user.username.slice(0,9) + "..."
+        else
+        return user.username
+    }
   
     const handleChange = (event, newValue) => {
-        setBuyAmount(0)
-        setSellAmount(0)
-        setDisableButton(false)
-        setInputError(false)
-        setErrorMessage('')
-      setTabValue(newValue)
-    };
-  
+      setBuyAmount(0)
+      setSellAmount(0)
+      setDisableButton(false)
+      setInputError(false)
+      setErrorMessage('')
+    setTabValue(newValue)
+  };
+
     const handleChangeIndex = (index) => {
       setTabValue(index)
     }
@@ -121,29 +145,85 @@ function ProfileBox() {
         setDialogOpen(false)
       }
 
-      const openDialog = () => {
+      const openDialog = async () => {
+        await loadBlockchain()
         setBuyAmount(0)
         setSellAmount(0)
         setDialogOpen(true)
       }
 
+      const loadBlockchain = async () => {
+        await loadWeb3()
+        await loadBlockchainData()
+      }
+
+      const loadWeb3 = async () => {
+        if (window.ethereum) {
+          window.web3 = new Web3(window.ethereum)
+          await window.ethereum.enable()
+        }
+        else if (window.web3) {
+          window.web3 = new Web3(window.web3.currentProvider)
+        }
+        else {
+          window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+        }
+      }
+
+      const loadBlockchainData = async () => {
+        const web3 = window.web3
+    
+        const accounts = await web3.eth.getAccounts()
+        setAccount(accounts[0])
+        setAccountDisplay(accounts[0].slice(0,6))
+        
+        const networkId = await web3.eth.net.getId()
+        
+        // Load DaiToken
+        //address 0x15391726683672fe8102a406d44792C387E03dF5
+        const daiTokenData = DaiToken.networks[networkId]
+        if(daiTokenData) {
+          const _daiToken = new web3.eth.Contract(DaiToken.abi, daiTokenData.address)
+          setDaiToken(_daiToken)
+          
+        } else {
+          alert('DaiToken contract not deployed to detected network.')
+        }
+        
+        // Load BSBack
+        //address 0xe6b7E811690103db6CB3c02bfa097e57e6a3E41D
+        const BSBackData = BSBack.networks[networkId]
+        if(BSBackData) {
+          const _bsBack = new web3.eth.Contract(BSBack.abi, BSBackData.address)
+          setBSBack(_bsBack)
+        } else {
+          alert('Crypto Wars smart contract not deployed to detected network.')
+        }
+      }
+
       const buyCoins = (e) => {
         e.preventDefault()
         setDialogOpen(false)
-        setIsLoaded(false)
+        setLoading(true)
         const { balance } = user
-        const tempUser = user
         const amount = parseInt(balance) + parseInt(buyAmount)
-        tempUser.balance = amount
-        Auth.updateTokens(user, amount).then((data) => {
-          const { msgBody, msgError } = data.message
-          if(!msgError)
-            setUser(tempUser)
-          else
-            alert(msgBody)
-
-          setIsLoaded(true)
-        })
+        const tempUser = {username: user.username, role: user.role, balance: amount}
+            // daiToken.methods.approve(bsBack._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 }).on('transactionHash', (hash) => {
+            // bsBack.methods.buyCoins(daiToken._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 })
+            //   .on('transactionHash', (hash) => {
+            //     setLoading(false)
+            //   })
+            //   .on('receipt', (receipt) => {
+                Auth.updateTokens(user, amount).then((data) => {
+                  const { msgBody, msgError } = data.message
+                  if(!msgError)
+                    setUser(tempUser)
+                  else
+                    alert(msgBody)
+                })
+            //   })
+            // })
+          setLoading(false)
         // props.buyCoins(buyAmount)
       }
 
@@ -154,29 +234,50 @@ function ProfileBox() {
         const amount = parseInt(balance) - parseInt(sellAmount)
         console.log(amount)
         if(amount >= 0) {
-          setIsLoaded(false)
+          setLoading(true)
           const tempUser = user
+          const temBalance = balance
           tempUser.balance = amount
           Auth.updateTokens(user, amount).then((data) => {
             const { msgBody, msgError } = data.message
-            if(!msgError)
-            setUser(tempUser)
+            alert(Web3.utils.toWei(amount, "ether"))
+            if(!msgError){
+              bsBack.methods.collectFunds(daiToken._address, account, sellAmount).send({ from: admin, gas: 500000 })
+                .on('transactionHash', (hash) => {
+                    setLoading(false)
+                  })
+                  .on('receipt', (error, receipt) => {
+                    setUser(tempUser)
+                  })
+                  .on('error', (error, receipt) => {
+                    Auth.updateTokens(user, temBalance).then((data) => {
+                      const { msgBody, msgError } = data.message
+                      if(msgError)
+                        alert(msgBody)
+                      })
+                      // setUser(_user)
+                    })
+            }
             else
-            alert(msgBody)
+              alert(msgBody)
 
-            setIsLoaded(true)
+              setLoading(false)
           })
             // props.sellCoins(sellAmount)
           } else {
+            setLoading(false)
             alert("Cannot sell more credits than owned")
           }
+          setLoading(false)
       }
 
       const logout = () => {
+        setLoading(true)
         Auth.logout().then(() => {
           setUser({username: '', role: '', balance: ''})
           setIsAuthenticated(false)
         })
+        setLoading(false)
       }
 
       const checkInput = (value) => {
@@ -273,12 +374,19 @@ function ProfileBox() {
                         </InputAdornment>
                       ),
                     }}/>
+                    <Typography type="subtitle1">Address: {accountDisplay}...</Typography>
                     
                     <Typography type="subtitile1" className={classes.textField}>
-                        Cost: <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {buyAmount}
+                        Cost:
                     </Typography>
                     <Typography type="subtitile1">
-                        Recieve: <MonetizationOn className={classes.coins}/> {buyAmount}
+                      <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {buyAmount}
+                    </Typography>
+                    <Typography type="subtitile1">
+                        Recieve:
+                    </Typography>
+                    <Typography type="subtitile1">
+                      <MonetizationOn className={classes.coins}/> {buyAmount}
                     </Typography>
                   <Button 
                     className={classes.button} 
@@ -309,11 +417,19 @@ function ProfileBox() {
                         </InputAdornment>
                       ),
                     }}/>
+                    <Typography type="subtitle1">Address: {accountDisplay}...</Typography>
+
                     <Typography type="subtitile1" className={classes.textField}>
-                        Cost: <MonetizationOn className={classes.coins} /> {sellAmount}
+                        Cost:
                     </Typography>
                     <Typography type="subtitile1">
-                        Recieve: <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {sellAmount}
+                      <MonetizationOn className={classes.coins}/> {sellAmount}
+                    </Typography>
+                    <Typography type="subtitile1">
+                        Recieve:
+                    </Typography>
+                    <Typography type="subtitile1">
+                      <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {sellAmount}
                     </Typography>
                   <Button 
                     className={classes.button} 
@@ -333,36 +449,34 @@ function ProfileBox() {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleDialogClose} className={classes.green}>
-                Cancel
+                Close
               </Button>
             </DialogActions>
         </Dialog>
         <Card className={classes.card}>
-            <Grid container>
-                <Grid item xs={6} className={classes.userBox}>
-                    <Typography variant="subtitle1" className={classes.userText} align="left">
-                    <Button
-                    className={classes.logout}
-                    variant="contained"
-                    onClick={() => logout()}>
-                      logout
-                    </Button>
-                    <Face /><span className={classes.username}>{user.username}</span>
-                    </Typography>
-                </Grid>
-                <Grid item xs={6} className={classes.userBox}>
-                    <Typography variant="subtitle1" className={classes.coins} align="right">
-                    <MonetizationOn /><span className={classes.username}>{user.balance}</span>
-                    <Button
+                  <Typography variant="subtitle1" className={classes.coins} align="right">
+                  <Face className={classes.userText}/> 
+                    <span className={classes.username}>{setUsername()}</span>
+                  <MonetizationOn />
+                    <span className={classes.username}>{user.balance}</span>
+                  <Box display={{ xs: 'none', sm: 'inline' }}>
+                  <Button
                     className={classes.transferButton}
                     variant="contained"
+                    size="small"
                     onClick={() => openDialog()}
                     >    
-                        <CompareArrows />
+                    <CompareArrows />
+                  </Button>
+                  </Box>
+                    <Button
+                      className={classes.logout}
+                      variant="contained"
+                      size="small"
+                      onClick={() => logout()}>
+                      <MeetingRoom />
                     </Button>
-                    </Typography>
-                </Grid>
-            </Grid>
+                  </Typography>
         </Card>
         </React.Fragment>
     )
