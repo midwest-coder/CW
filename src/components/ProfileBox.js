@@ -374,7 +374,7 @@ function ProfileBox(props) {
                         </InputAdornment>
                       ),
                     }}/>
-                    <Typography type="subtitle1">Address: {accountDisplay}...</Typography>
+                    <Typography type="subtitle1">Wallet: {accountDisplay}...</Typography>
                     
                     <Typography type="subtitile1" className={classes.textField}>
                         Cost:
@@ -417,7 +417,7 @@ function ProfileBox(props) {
                         </InputAdornment>
                       ),
                     }}/>
-                    <Typography type="subtitle1">Address: {accountDisplay}...</Typography>
+                    <Typography type="subtitle1">Wallet: {accountDisplay}...</Typography>
 
                     <Typography type="subtitile1" className={classes.textField}>
                         Cost:

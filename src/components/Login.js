@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
         if(!isAuthenticated){
             setDialogOpen(true)
             setDialogTitle('Uh Oh')
-            setDialogText("Looks like that username and password was invalid. Give it another try")
+            setDialogText("Looks like that username and password are invalid. Give it another try")
         }
         setLoading(false)
         })

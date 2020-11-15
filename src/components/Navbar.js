@@ -1,4 +1,4 @@
-import logo from '../images/cryptoWars.png'
+import logo from '../images/cryptoBehemoth.png'
 import React from 'react'
 import { AppBar, IconButton, Toolbar } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -9,8 +9,8 @@ const useStyles = makeStyles({
     color: 'white'
   },
   logo: {
-    height: '50%',
-    width: '50%',
+    height: '100%',
+    width: '100%',
   }
 })
 

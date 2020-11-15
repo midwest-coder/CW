@@ -1,10 +1,11 @@
-import { Box, Card, CardActions, CardContent, CardMedia, Divider, Grid, Typography } from '@material-ui/core';
+import { Card, CardContent, Grid, Typography } from '@material-ui/core';
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
-import { grey, cyan } from '@material-ui/core/colors'
+import { grey } from '@material-ui/core/colors'
 import { CloudDownload } from '@material-ui/icons'
 import gameScreenshot from '../images/ew-screenshot-crop.png'
+import ewCover from '../images/ew-game-cover.jpg'
 
 const useStyles = makeStyles({
     card: {
@@ -17,6 +18,11 @@ const useStyles = makeStyles({
     gamePreview: {
         width: 250,
         height: 250,
+        padding: 10
+    },
+    gameCover: {
+        width: 260,
+        height: 260,
         padding: 10
     },
     gamePreviewBox: {
@@ -64,7 +70,7 @@ function Gamebox() {
                     </Card>
                     <Card className={classes.statsBox}>
                         <Typography align="center">
-                            <img src={gameScreenshot} title="Game Screenshot" className={classes.gamePreview}/>
+                            <img src={ewCover} title="Game Screenshot" className={classes.gameCover}/>
                         </Typography>
                     </Card>
                 </Grid>
@@ -81,7 +87,7 @@ function Gamebox() {
                                         Endless War is a blend of a sandbox shooter meets io. 
                                         It will cost credits to get into the game and each kill will earn you a credit.
                                         A simple game to pick up but still brings loads of fun and potential profits.
-                                        Download today and see if you have what it takes to battle the Endless War.
+                                        Download today and see if you have what it takes to battle in the Endless War.
                                     </Typography>
                                     <Typography align="center">
                                         <Button
@@ -99,7 +105,7 @@ function Gamebox() {
                                     <Card className={classes.gamePreviewBox}>
                                         <img src={gameScreenshot} title="Game Screenshot" className={classes.gamePreview}/>
                                         <Typography variant="subtitle2" className={classes.gamePreviewText} align="center">
-                                            Gameplay
+                                            Screenshot
                                         </Typography>
                                     </Card>
                                 </Grid>
