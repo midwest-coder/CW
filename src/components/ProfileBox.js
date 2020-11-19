@@ -4,13 +4,15 @@ import { Button, Card, Grid, Typography, Dialog, DialogTitle, DialogContent,
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types';
 import { grey, lightBlue, purple } from '@material-ui/core/colors'
-import { AttachMoney, CompareArrows, Face, MeetingRoom, MonetizationOn } from '@material-ui/icons'
+import { AttachMoney, CompareArrows, Face, MeetingRoom, MonetizationOn, QuestionAnswer } from '@material-ui/icons'
 import Web3 from 'web3'
 import BSBack from '../abis/BSBack.json'
 import DaiToken from '../abis/DaiToken.json'
 import daiLogo from '../images/dai.png'
 import Auth from '../services/Auth'
 import { AuthContext } from '../context/AuthContext'
+import HelpDialog from './HelpDialog'
+import ProfileMenu from './ProfileMenu'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,7 +62,7 @@ const useStyles = makeStyles({
     },
     userText: {
         color: lightBlue[600],
-        marginLeft: 10,
+        marginRight: 10,
     },
     coins: {
         color: purple[500]
@@ -88,7 +90,7 @@ const useStyles = makeStyles({
     logout: {
         background: 'linear-gradient(45deg, #113C70, #3D0757)',
         color: grey[100],
-        marginRight: 15
+        marginRight: 15,
     },
     textField: {
       marginTop: 20,
@@ -96,18 +98,24 @@ const useStyles = makeStyles({
     daiLogo: {
       width: 20,
       height: 20,
+    },
+    a: {
+        textDecoration: 'none'
     }
 })
 
 function ProfileBox(props) {
     const classes = useStyles()
     const { user,setUser, isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
+    const [menuOpen, setMenuOpen] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [helpOpen, setHelpOpen] = useState(false)
     const [inputError, setInputError] = useState(false)
     const [disableButton, setDisableButton] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const dialogContent = ''
     const [tabValue, setTabValue] = useState(0);
+    const [web3Loaded, setWeb3Loaded] = useState(true);
     const [buyAmount, setBuyAmount] = useState(0);
     const [sellAmount, setSellAmount] = useState(0);
     const [account, setAccount] = useState('0')
@@ -145,11 +153,27 @@ function ProfileBox(props) {
         setDialogOpen(false)
       }
 
+      const openMenu = (event) => {
+        setMenuOpen(event.currentTarget);
+      };
+
       const openDialog = async () => {
-        await loadBlockchain()
-        setBuyAmount(0)
-        setSellAmount(0)
-        setDialogOpen(true)
+        setMenuOpen(null);
+        try{
+          await loadBlockchain()
+        } catch(Error) {
+          setWeb3Loaded(false);
+        }
+        if(web3Loaded){
+          setBuyAmount(0)
+          setSellAmount(0)
+          setDialogOpen(true)
+        }
+      }
+
+      const openHelp = () => {
+        setMenuOpen(null);
+        setHelpOpen(true)
       }
 
       const loadBlockchain = async () => {
@@ -166,7 +190,8 @@ function ProfileBox(props) {
           window.web3 = new Web3(window.web3.currentProvider)
         }
         else {
-          window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+          throw Error;
+          alert('Must have metamask chrome extension and wallet loaded')
         }
       }
 
@@ -188,6 +213,7 @@ function ProfileBox(props) {
           
         } else {
           alert('DaiToken contract not deployed to detected network.')
+          throw Error;
         }
         
         // Load BSBack
@@ -198,6 +224,7 @@ function ProfileBox(props) {
           setBSBack(_bsBack)
         } else {
           alert('Crypto Wars smart contract not deployed to detected network.')
+          throw Error;
         }
       }
 
@@ -240,23 +267,23 @@ function ProfileBox(props) {
           tempUser.balance = amount
           Auth.updateTokens(user, amount).then((data) => {
             const { msgBody, msgError } = data.message
-            alert(Web3.utils.toWei(amount, "ether"))
+            // alert(Web3.utils.toWei(amount, "ether"))
             if(!msgError){
-              bsBack.methods.collectFunds(daiToken._address, account, sellAmount).send({ from: admin, gas: 500000 })
-                .on('transactionHash', (hash) => {
-                    setLoading(false)
-                  })
-                  .on('receipt', (error, receipt) => {
-                    setUser(tempUser)
-                  })
-                  .on('error', (error, receipt) => {
-                    Auth.updateTokens(user, temBalance).then((data) => {
-                      const { msgBody, msgError } = data.message
-                      if(msgError)
-                        alert(msgBody)
-                      })
-                      // setUser(_user)
-                    })
+              // bsBack.methods.collectFunds(daiToken._address, account, sellAmount).send({ from: admin, gas: 500000 })
+              //   .on('transactionHash', (hash) => {
+              //       setLoading(false)
+              //     })
+              //     .on('receipt', (error, receipt) => {
+              //       setUser(tempUser)
+              //     })
+              //     .on('error', (error, receipt) => {
+              //       Auth.updateTokens(user, temBalance).then((data) => {
+              //         const { msgBody, msgError } = data.message
+              //         if(msgError)
+              //           alert(msgBody)
+              //         })
+              //         // setUser(_user)
+              //       })
             }
             else
               alert(msgBody)
@@ -335,7 +362,7 @@ function ProfileBox(props) {
 
     return(
         <React.Fragment>
-            <Dialog
+          <Dialog
           open={dialogOpen}
           onClose={handleDialogClose}
           aria-labelledby="transfer-dialog-title"
@@ -453,13 +480,26 @@ function ProfileBox(props) {
               </Button>
             </DialogActions>
         </Dialog>
+        <HelpDialog open={helpOpen} setOpen={setHelpOpen} />
         <Card className={classes.card}>
                   <Typography variant="subtitle1" className={classes.coins} align="right">
-                  <Face className={classes.userText}/> 
-                    <span className={classes.username}>{setUsername()}</span>
-                  <MonetizationOn />
-                    <span className={classes.username}>{user.balance}</span>
-                  <Box display={{ xs: 'none', sm: 'inline' }}>
+                  <MonetizationOn /><span className={classes.username}>{user.balance}</span>
+                    <Button
+                      aria-controls="customized-menu"
+                      aria-haspopup="true"
+                      variant="contained"
+                      className={classes.logout}
+                      onClick={openMenu}
+                    >
+                    <Face className={classes.userText}/> {setUsername()}
+                    </Button>
+                    <ProfileMenu 
+                      anchor={menuOpen} 
+                      setOpen={setMenuOpen} 
+                      onTransfer={openDialog} 
+                      onHelp={openHelp} 
+                      onLogout={logout}/>
+                  {/* <Box display={{ xs: 'none', sm: 'inline' }}>
                   <Button
                     className={classes.transferButton}
                     variant="contained"
@@ -476,6 +516,13 @@ function ProfileBox(props) {
                       onClick={() => logout()}>
                       <MeetingRoom />
                     </Button>
+                    <Button
+                      className={classes.logout}
+                      variant="contained"
+                      size="small"
+                      onClick={openHelp}>
+                        <QuestionAnswer />
+                    </Button> */}
                   </Typography>
         </Card>
         </React.Fragment>
