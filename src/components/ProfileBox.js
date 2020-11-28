@@ -321,10 +321,22 @@ function ProfileBox(props) {
                 }
                 else {
                     if(tabValue === 0) {
+                      if(value < 10){
+                        setDisableButton(true)
+                        setInputError(true)
+                        setErrorMessage('Must buy at least 1 DAI worth')
+                      }
+                      else if(value % 10 != 0){
+                        setDisableButton(true)
+                        setInputError(true)
+                        setErrorMessage('Must buy in whole DAI values')
+                      }
+                      else {
                         setDisableButton(false)
                         setInputError(false)
                         setErrorMessage('')
                         setBuyAmount(value)
+                      }
                     }
                     else {
                       const balance = parseInt(user.balance)
@@ -332,6 +344,16 @@ function ProfileBox(props) {
                             setDisableButton(true)
                             setInputError(true)
                             setErrorMessage('Must have sufficient funds')
+                        }
+                        else if(value < 10){
+                            setDisableButton(true)
+                            setInputError(true)
+                            setErrorMessage('Must sell at least 1 DAI worth')
+                        }
+                        else if(value % 10 != 0){
+                          setDisableButton(true)
+                          setInputError(true)
+                          setErrorMessage('Must sell in whole DAI values')
                         }
                         else {
                             setDisableButton(false)
@@ -407,7 +429,7 @@ function ProfileBox(props) {
                         Cost:
                     </Typography>
                     <Typography type="subtitile1">
-                      <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {buyAmount}
+                      <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {buyAmount / 10}
                     </Typography>
                     <Typography type="subtitile1">
                         Recieve:
@@ -456,7 +478,7 @@ function ProfileBox(props) {
                         Recieve:
                     </Typography>
                     <Typography type="subtitile1">
-                      <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {sellAmount}
+                      <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {sellAmount / 10}
                     </Typography>
                   <Button 
                     className={classes.button} 

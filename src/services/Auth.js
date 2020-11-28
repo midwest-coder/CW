@@ -13,6 +13,22 @@ export default {
             return { isAuthenticated: false, user: {username: '', role: '', balance: ''}}
         })
     },
+    getUsers: () => {
+        return fetch('/user/getUsers').then((res) => {
+            if(res.status !== 404)
+            return res.json().then((data) => data)
+            else
+            return { isTaken: false}
+        })
+    },
+    getMatches: () => {
+        return fetch('/user/getMatches').then((res) => {
+            if(res.status !== 404)
+            return res.json().then((data) => data)
+            else
+            return { isTaken: false}
+        })
+    },
     register: (user) => {
         return fetch('/user/register', {
             method: "post",

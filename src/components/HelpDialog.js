@@ -7,47 +7,47 @@ const useStyles = makeStyles({
 })
 
 function getSteps() {
-  return ['Add credits to account', 'Download game', 'Transfer credits back'];
+  return ['Add credits to account', 'Download game', 'Transfer credits to crypto'];
 }
 
 function getStepContent(stepIndex) {
   switch (stepIndex) {
     case 0:
       return <Grid container>
-              <Grid item xs={12} sm={4}>
-                <Typography >1. Our games require credits to play, so first you need to purchase credits</Typography>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Typography >2. Purchase credits by clicking transfer in the profile menu. Currently this action must be done on a computer</Typography>
+                <Grid item xs={12} sm={4}>
+                  <Typography >1. Our games require credits to play, so first you need to purchase credits</Typography>
                 </Grid>
-              <Grid item xs={12} sm={4}>
-                <Typography>3. Transfer for credits using DAI. Make sure to have <Link href="https://metamask.io/" target="blank">Metamask chrome extension</Link>, and Ether for gas</Typography>
-                </Grid>
-            </Grid>;
+                <Grid item xs={12} sm={4}>
+                  <Typography >2. Purchase credits by clicking transfer in the profile menu. Currently this action must be done on a computer</Typography>
+                  </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Typography>3. Transfer for credits using DAI. Make sure to have Ether for gas and <Link href="https://metamask.io/" target="blank">Metamask Chrome extension</Link></Typography>
+                  </Grid>
+              </Grid>;
     case 1:
       return <Grid container>
-      <Grid item xs={12} sm={4}>
-        <Typography >1.  You can find our titles at the bottom of the page, currently only with our debut title</Typography>
-      </Grid>
-      <Grid item xs={12} sm={4}>
-        <Typography >2. Click the download button to download the zipped game folder. Unzip the folder when done</Typography>
-        </Grid>
-      <Grid item xs={12} sm={4}>
-        <Typography >3. Open the unzipped folder and click on the application file with the name of the game</Typography>
-        </Grid>
-    </Grid>;;
+                <Grid item xs={12} sm={4}>
+                  <Typography >1.  You can find our titles at the bottom of the page, currently only with our debut title</Typography>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Typography >2. Click the download button to download the zipped game folder. Unzip the folder when done</Typography>
+                  </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Typography >3. Open the unzipped folder and click on the application file with the name of the game</Typography>
+                  </Grid>
+              </Grid>;
     case 2:
       return <Grid container>
-      <Grid item xs={12} sm={4}>
-        <Typography >1. Once you're ready to transfer your credits back click transfer in the profile menu</Typography>
-      </Grid>
-      <Grid item xs={12} sm={4}>
-        <Typography >2. Choose an amount to sell and that will be deducted from your credits and returned in DAI</Typography>
-        </Grid>
-      <Grid item xs={12} sm={4}>
-        <Typography >3. Check the abbreviated wallet address under the amount to make sure it's correct</Typography>
-        </Grid>
-    </Grid>;;
+                <Grid item xs={12} sm={4}>
+                  <Typography >1. Once you're ready to transfer your credits back click transfer in the profile menu</Typography>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Typography >2. Choose an amount to sell and that will be deducted from your credits and returned in DAI</Typography>
+                  </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Typography >3. Check the abbreviated wallet address under the amount to make sure it's correct</Typography>
+                  </Grid>
+              </Grid>;
     default:
       return <React.Fragment>
               <Typography align="center">And that's all there is to it!</Typography>
@@ -62,8 +62,8 @@ export default function HelpDialog(props) {
   const steps = getSteps();
   
   const handleDialogClose = () => {
-      setActiveStep(0);
-      props.setOpen(false)
+    props.setOpen(false)
+    setActiveStep(0);
     }
 
     const handleNext = () => {
@@ -99,26 +99,26 @@ export default function HelpDialog(props) {
           </DialogContent>
           <DialogActions>
           <div>
-                {activeStep === steps.length ? (
+              {activeStep === steps.length ? (
+                <div>
+                  <Button onClick={handleReset}>See it Again</Button>
+                </div>
+              ) : (
+                <div>
                   <div>
-                    <Button onClick={handleReset}>See it Again</Button>
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                    >
+                      Back
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={handleNext}>
+                      {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                    </Button>
                   </div>
-                ) : (
-                  <div>
-                    <div>
-                      <Button
-                        disabled={activeStep === 0}
-                        onClick={handleBack}
-                      >
-                        Back
-                      </Button>
-                      <Button variant="contained" color="primary" onClick={handleNext}>
-                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
             <Button onClick={handleDialogClose} color="primary" autoFocus>
               Okay
             </Button>

@@ -1,5 +1,6 @@
 import { Card, Grid, Typography, TextField, InputAdornment, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import React, { useState, useContext } from 'react'
+import Recaptcha from 'react-google-recaptcha'
 import { makeStyles } from '@material-ui/core/styles'
 import { AccountCircle, Email, Lock } from '@material-ui/icons';
 import Auth from '../services/Auth'
@@ -34,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  captcha: {
+    marginTop: 30
   }
 })
 )
@@ -44,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
   const [usernameError, setUsernameError] = useState(false)
   const [passError, setPassError] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [captcha, setCaptcha] = useState(false)
   const [dialogText, setDialogText] = useState('')
   const [dialogTitle, setDialogTitle] = useState('')
   const [userErrMsg, setUserErrMsg] = useState('')
@@ -65,8 +70,8 @@ const useStyles = makeStyles((theme) => ({
     if(value.length < 6) {
       setUserErrMsg('Must input at least 6 characters')
       setUsernameError(true)
-    } else if(value.length > 25) {
-      setUserErrMsg('Must be less than 25 characters')
+    } else if(value.length > 20) {
+      setUserErrMsg('Must be less than 20 characters')
       setUsernameError(true)
     } else {
       // Auth.checkUser(value).then((data) => {
@@ -102,7 +107,12 @@ const useStyles = makeStyles((theme) => ({
 
   const submitData = (e) => {
     e.preventDefault()
-    if(emailValue === '' && userValue === '' && passValue === '') {
+    if(!captcha){
+      setDialogOpen(true)
+      setDialogTitle('Are You Even A Human?')
+      setDialogText("You didn't click the captcha button. Real quick click that so we know you're not a robot Beep Boop!")
+    }
+    else if(emailValue === '' && userValue === '' && passValue === '') {
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill it out at all ya goof! Do us a solid and get that all filled out")
@@ -141,12 +151,15 @@ const useStyles = makeStyles((theme) => ({
               Auth.login(user).then((data) => {
                 const { user, isAuthenticated, message } = data
                 authContext.setUser(user)
+                authContext.setNewUser(true)
                 authContext.setIsAuthenticated(isAuthenticated)
                 // if(isAuthenticated)
                 // alert("Account successfully created and logged in")
               })
             } else 
-                alert(msgBody)
+            setDialogOpen(true)
+            setDialogTitle('Uh Oh')
+            setDialogText(msgBody)
           })
         setLoading(false)
       //     else
@@ -203,7 +216,8 @@ const useStyles = makeStyles((theme) => ({
                           <Email />
                         </InputAdornment>
                       ),
-                    }}/>
+                    }}
+                    fullWidth/>
                 </div>
                 <div>
                   <TextField 
@@ -221,7 +235,8 @@ const useStyles = makeStyles((theme) => ({
                           <AccountCircle />
                         </InputAdornment>
                       ),
-                    }}/>
+                    }}
+                    fullWidth/>
                 </div>
                 <div>
                   <TextField 
@@ -238,7 +253,16 @@ const useStyles = makeStyles((theme) => ({
                           <Lock />
                         </InputAdornment>
                       ),
-                    }}/>
+                    }}
+                    fullWidth/>
+                </div>
+                <div>
+                  <Recaptcha 
+                  className={classes.captcha}
+                  sitekey="6LdkJ_AZAAAAAGUkPA_fSKp1sivrStsrrZMJWynv"
+                  onChange={() => {setCaptcha(true)}}
+                  onExpired={() => {setCaptcha(false)}}
+                  />
                 </div>
                   <Button 
                     className={classes.button} 

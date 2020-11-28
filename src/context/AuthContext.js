@@ -5,6 +5,7 @@ export const AuthContext = createContext()
 
 export default ({ children }) => {
     const [user, setUser] = useState(null)
+    const [newUser, setNewUser] = useState(false)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
@@ -17,7 +18,7 @@ export default ({ children }) => {
 
     return(
         <React.Fragment>
-            <AuthContext.Provider value={{user, setUser, isAuthenticated, setIsAuthenticated }}>
+            <AuthContext.Provider value={{user, setUser, isAuthenticated, setIsAuthenticated, newUser, setNewUser }}>
                 {children}
             </AuthContext.Provider>
         </React.Fragment>
