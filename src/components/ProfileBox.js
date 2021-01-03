@@ -2,9 +2,9 @@ import React, { useState, useContext } from 'react'
 import { Button, Card, Grid, Typography, Dialog, DialogTitle, DialogContent, 
     Box, DialogContentText, DialogActions, Tab, Tabs, TextField, InputAdornment } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 import { grey, lightBlue, purple } from '@material-ui/core/colors'
-import { AttachMoney, CompareArrows, Face, MeetingRoom, MonetizationOn, QuestionAnswer } from '@material-ui/icons'
+import { AttachMoney, Face, MonetizationOn } from '@material-ui/icons'
 import Web3 from 'web3'
 import BSBack from '../abis/BSBack.json'
 import DaiToken from '../abis/DaiToken.json'
@@ -232,15 +232,17 @@ function ProfileBox(props) {
         e.preventDefault()
         setDialogOpen(false)
         setLoading(true)
-        const { balance } = user
-        const amount = parseInt(balance) + parseInt(buyAmount)
-        const tempUser = {username: user.username, role: user.role, balance: amount}
-            // daiToken.methods.approve(bsBack._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 }).on('transactionHash', (hash) => {
-            // bsBack.methods.buyCoins(daiToken._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 })
-            //   .on('transactionHash', (hash) => {
-            //     setLoading(false)
-            //   })
-            //   .on('receipt', (receipt) => {
+        Auth.isAuthenticated().then((data) => {
+          if(data.isAuthenticated){
+            const balance = data.user.balance
+            const amount = parseInt(balance) + parseInt(buyAmount)
+            const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
+              // daiToken.methods.approve(bsBack._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 }).on('transactionHash', (hash) => {
+              // bsBack.methods.buyCoins(daiToken._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 })
+              //   .on('transactionHash', (hash) => {
+              //     setLoading(false)
+              //   })
+              //   .on('receipt', (receipt) => {
                 Auth.updateTokens(user, amount).then((data) => {
                   const { msgBody, msgError } = data.message
                   if(!msgError)
@@ -248,6 +250,8 @@ function ProfileBox(props) {
                   else
                     alert(msgBody)
                 })
+              }
+          })
             //   })
             // })
           setLoading(false)
@@ -491,11 +495,6 @@ function ProfileBox(props) {
               </form>
             </TabPanel>
           </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="transfer-dialog-description">
-                  {dialogContent}
-              </DialogContentText>
-            </DialogContent>
             <DialogActions>
               <Button onClick={handleDialogClose} className={classes.green}>
                 Close

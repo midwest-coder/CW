@@ -1,11 +1,12 @@
-import { Card, Grid, Typography, TextField, InputAdornment, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
+import { Card, Grid, Typography, TextField, InputAdornment, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Link } from '@material-ui/core';
 import React, { useState, useContext } from 'react'
 import Recaptcha from 'react-google-recaptcha'
 import { makeStyles } from '@material-ui/core/styles'
 import { AccountCircle, Email, Lock } from '@material-ui/icons';
 import Auth from '../services/Auth'
-import { grey } from '@material-ui/core/colors'
+import { blue, grey, lightBlue } from '@material-ui/core/colors'
 import { AuthContext } from '../context/AuthContext'
+import Terms from './Terms';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     background: 'linear-gradient(45deg, #32a883, #3290a8)',
     color: 'white',
-    marginTop: 30,
+    marginTop: 10,
   },
   purple: {
       background: 'linear-gradient(45deg, #113C70, #3D0757)',
@@ -37,7 +38,17 @@ const useStyles = makeStyles((theme) => ({
     color: '#fff',
   },
   captcha: {
-    marginTop: 30
+    marginTop: 50
+  },
+  link: {
+    cursor: 'pointer',
+    color: grey[100],
+    fontSize: 14
+  },
+  terms: {
+    color: grey[200],
+    marginTop: 30,
+    fontSize: 12
   }
 })
 )
@@ -49,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
   const [passError, setPassError] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [captcha, setCaptcha] = useState(false)
+  const [termsOpen, setTermsOpen] = useState(false)
   const [dialogText, setDialogText] = useState('')
   const [dialogTitle, setDialogTitle] = useState('')
   const [userErrMsg, setUserErrMsg] = useState('')
@@ -109,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
     e.preventDefault()
     if(!captcha){
       setDialogOpen(true)
-      setDialogTitle('Are You Even A Human?')
+      setDialogTitle('You Even A Human?')
       setDialogText("You didn't click the captcha button. Real quick click that so we know you're not a robot Beep Boop!")
     }
     else if(emailValue === '' && userValue === '' && passValue === '') {
@@ -258,11 +270,17 @@ const useStyles = makeStyles((theme) => ({
                 </div>
                 <div>
                   <Recaptcha 
+                  theme="dark"
                   className={classes.captcha}
                   sitekey="6LdkJ_AZAAAAAGUkPA_fSKp1sivrStsrrZMJWynv"
                   onChange={() => {setCaptcha(true)}}
                   onExpired={() => {setCaptcha(false)}}
                   />
+                </div>
+                <div>
+                  <Terms setOpen={setTermsOpen} open={termsOpen}/>
+                  <Typography align="center" className={classes.terms}>By clicking SIGN UP you Agree to our</Typography>
+                  <Typography align="center" className={classes.link} onClick={() => {setTermsOpen(true)}}>"Terms of Use" and "Privacy Policy"</Typography>
                 </div>
                   <Button 
                     className={classes.button} 

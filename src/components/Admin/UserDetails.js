@@ -100,7 +100,7 @@ function UserDetails(props) {
                                     {props.users.filter((user) => user.username.startsWith(searchResult.toLowerCase()))
                                     .map((user) => <li className={classes.li}>
                                         <Button className={classes.button}>
-                                        <UserListItem user={user}/>
+                                        <UserListItem user={user} matches={props.matches}/>
                                         </Button>
                                         </li>)}
                                 </ul>
@@ -126,7 +126,7 @@ function UserDetails(props) {
                                 <Card className={classes.gameList}>
                                     <ul className={classes.ul}>
                                         {(focusedUser == undefined) ? '' : (focusedUser.matches == undefined) ? '' : 
-                                            focusedUser.matches.map((matchID) => {
+                                            focusedUser.matches.reverse().map((matchID) => {
                                                 return <li className={classes.li}>
                                             <Button className={classes.button}>
                                                 <GameItem match={props.matches.find((e) => e._id === matchID)}/>

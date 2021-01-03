@@ -108,6 +108,13 @@ function CompanyDetails(props) {
         return m
     }
 
+    const getPointCount = () => {
+        let p = 0
+        props.matches.filter((match) => Date.parse(match.createdAt) >= selectedDate && Date.parse(match.createdAt) <= selectedDate2)
+        .map((match) => p += match.points)
+        return p
+    }
+
     const getMatchCount = () => {
         let m = 0
         props.matches.filter((match) => Date.parse(match.createdAt) >= selectedDate && Date.parse(match.createdAt) <= selectedDate2)
@@ -115,11 +122,15 @@ function CompanyDetails(props) {
         return m
     }
 
-    const getUserCount = () => {
-        let m = 0
-        props.users.filter((user) => Date.parse(user.createdAt) >= selectedDate && Date.parse(user.createdAt) <= selectedDate2)
-        .map(() => m++)
-        return m
+    // const getUserCount = () => {
+    //     let u = 2
+    //     props.users.filter((user) => Date.parse(user.createdAt) >= selectedDate && Date.parse(user.createdAt) <= selectedDate2)
+    //     .map(() => u++)
+    //     return u
+    // }
+
+    const getProfits = () => {
+        return(isNumeric(((getMatchCount() * 3) - getPointCount()) / 10)) ? (((getMatchCount() * 3) - getPointCount()) / 10) : 0
     }
 
     const getVariance = () => {
@@ -174,14 +185,17 @@ function CompanyDetails(props) {
                         </Grid>
                     </Grid>
                     <Grid container>
-                        <Grid item xs={12} sm={4}>
+                        {/* <Grid item xs={12} sm={3}>
                             <Typography>users: {getUserCount()}</Typography>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} sm={4}>
                             <Typography>matches: {getMatchCount()}</Typography>
                         </Grid>
                         <Grid item xs={12} sm={4}>
                             <Typography>Variance: {getVariance()}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <Typography>Profits: {getProfits()}</Typography>
                         </Grid>
                     </Grid>
                     

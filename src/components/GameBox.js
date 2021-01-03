@@ -1,5 +1,5 @@
 import { Card, CardContent, Grid, Typography } from '@material-ui/core';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
@@ -205,13 +205,19 @@ function Gamebox(props) {
                         </TabPanel>
                         <TabPanel value={value} index={1}>
                             <GameStats 
-                            user={props.user} 
-                            userKills={props.userKills} 
-                            totalKills={props.totalKills} 
-                            totalPoints={props.totalPoints}/>
+                                user={props.user}
+                                totalKills={props.totalKills} 
+                                totalPoints={props.totalPoints} 
+                                userKills={props.userKills}  />
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                            <GameLeaderbaord leaderboards={props.leaderboards}/>
+                            <GameLeaderbaord 
+                                user={props.user}
+                                leaderboards={props.leaderboards} 
+                                matches={props.matches} 
+                                totalKills={props.totalKills} 
+                                totalPoints={props.totalPoints} 
+                                userKills={props.userKills}  />
                         </TabPanel>
                         </div>
                     </Card>

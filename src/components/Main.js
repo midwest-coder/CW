@@ -1,32 +1,29 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { AuthContext } from '../context/AuthContext'
 import Auth from '../services/Auth'
 import ProfileBox from './ProfileBox'
 import Banner from './Banner'
 import GameBox from './GameBox'
 
 function Main(props) {
-  const authContext = useContext(AuthContext)
   const [leaderboards, setLeaderboards] = useState([])
   const [matches, setMatches] = useState([])
   const [totalKills, setTotalKills] = useState(0)
   const [totalPoints, setTotalPoints] = useState(0)
   const [userKills, setUserKills] = useState([])
-  
+ 
   useEffect(() => {
-      // setLoading(true)
-      Auth.getMatches().then((data) => {
-          const { matches } = data
-          setMatches(matches)
-          getMatchStats(matches)
-          Auth.getUsers().then((data) => {
-            const { users } = data
-            setBoards(users, matches)
-          })
+    Auth.getMatches().then((data) => {
+      const { matches } = data
+      setMatches(matches)
+      getMatchStats(props.user ,matches)
+      Auth.getUsers().then((data) => {
+        const { users } = data
+        setBoards(users, matches)
       })
+  })
   }, [])
 
-  const setBoards = (_users, _matches) => {
+const setBoards = (_users, _matches) => {
     let lb = _users.map((user) => {
       let kills = 0
       user.matches.map((matchID) => {
@@ -38,12 +35,12 @@ function Main(props) {
     setLeaderboards(lb)
   }
   
-  const getMatchStats = (value) => {
+  const getMatchStats = (_user, value) => {
           // alert(loaded)
       let m
       let count = 0
       let pointCount = 0
-      let uk = authContext.user.matches.map((matchID) => {
+      let uk = _user.matches.map((matchID) => {
               m = value.find((e) => e._id === matchID)
               count += parseInt(m.kills)
               pointCount += parseInt(m.points)
@@ -63,12 +60,12 @@ function Main(props) {
         <Banner />
         <ProfileBox setLoading={setLoading}/>
         <GameBox 
-        leaderboards={leaderboards} 
-        user={props.user} 
-        userKills={userKills} 
-        totalKills={totalKills} 
-        totalPoints={totalPoints}
-        />
+          user={props.user}
+          leaderboards={leaderboards} 
+          matches={matches} 
+          totalKills={totalKills} 
+          totalPoints={totalPoints} 
+          userKills={userKills} />
       </React.Fragment>
     );
 }
