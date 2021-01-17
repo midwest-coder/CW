@@ -17,8 +17,7 @@ export default ({ children }) => {
 
     return(
         <React.Fragment>
-            <AuthContext.Provider value={{user, setUser, isAuthenticated, setIsAuthenticated, 
-                newUser, setNewUser}}>
+            <AuthContext.Provider value={{user, setUser, isAuthenticated, setIsAuthenticated, newUser, setNewUser}}>
                 {children}
             </AuthContext.Provider>
         </React.Fragment>
