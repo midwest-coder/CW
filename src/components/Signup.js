@@ -6,6 +6,8 @@ import { AccountCircle, Email, Lock } from '@material-ui/icons';
 import Auth from '../services/Auth'
 import { blue, grey, lightBlue } from '@material-ui/core/colors'
 import { AuthContext } from '../context/AuthContext'
+import Backdrop from '@material-ui/core/Backdrop'
+import { CircularProgress } from '@material-ui/core';
 import Terms from './Terms';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +51,10 @@ const useStyles = makeStyles((theme) => ({
     color: grey[200],
     marginTop: 30,
     fontSize: 12
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
   }
 })
 )
@@ -56,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
  function Signup(props){
   const classes = useStyles()
   const authContext = useContext(AuthContext)
+  const [loaded, setLoaded] = useState(false)
   const [usernameError, setUsernameError] = useState(false)
   const [passError, setPassError] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -118,46 +125,53 @@ const useStyles = makeStyles((theme) => ({
   };
 
   const submitData = (e) => {
+    setLoaded(true)
     e.preventDefault()
     if(!captcha){
       setDialogOpen(true)
       setDialogTitle('You Even A Human?')
       setDialogText("You didn't click the captcha button. Real quick click that so we know you're not a robot Beep Boop!")
+      setLoaded(false)
     }
     else if(emailValue === '' && userValue === '' && passValue === '') {
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill it out at all ya goof! Do us a solid and get that all filled out")
+      setLoaded(false)
     } else if(emailValue === '') {
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill out your email ya goof! Do us a solid and get that filled out")
+      setLoaded(false)
     } else if(userValue === '') {
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill out your username ya goof! Do us a solid and get that filled out")
+      setLoaded(false)
     } else if(passValue === '') {
       setDialogOpen(true)
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill out your password ya goof! Do us a solid and get that filled out")
+      setLoaded(false)
     } else if(usernameError && passError) {
       setDialogOpen(true)
       setDialogTitle('Uh Oh')
       setDialogText("Looks like there's a tiny issue with your username and password. Do us a favor and give it a quick look over.")
+      setLoaded(false)
     } else if(usernameError) {
       setDialogOpen(true)
       setDialogTitle('Uh Oh')
       setDialogText("Looks like there's a tiny issue with your username. Do us a favor and give it a quick look over.")
+      setLoaded(false)
     } else if(passError) {
       setDialogOpen(true)
       setDialogTitle('Uh Oh')
       setDialogText("Looks like there's a tiny issue with your password. Do us a favor and give it a quick look over.")
+      setLoaded(false)
     } else {
       const user = {username: userValue, password: passValue, email: emailValue, role: 'user', balance: '0'}
       // Auth.register(user).then((data) => {
-      //   if(!data.msgError)
-      setLoading(true)
-          Auth.register(user).then((data) => {
+        Auth.register(user).then((data) => {
             const { msgError, msgBody } = data.message
             if(!msgError){
               Auth.login(user).then((data) => {
@@ -165,6 +179,7 @@ const useStyles = makeStyles((theme) => ({
                 authContext.setUser(user)
                 authContext.setNewUser(true)
                 authContext.setIsAuthenticated(isAuthenticated)
+                setLoaded(false)
                 // if(isAuthenticated)
                 // alert("Account successfully created and logged in")
               })
@@ -173,7 +188,6 @@ const useStyles = makeStyles((theme) => ({
             setDialogTitle('Uh Oh')
             setDialogText(msgBody)
           })
-        setLoading(false)
       //     else
       //       alert(`Error occured registering user`)
       // })
@@ -186,6 +200,9 @@ const useStyles = makeStyles((theme) => ({
 
     return (
       <React.Fragment>
+      <Backdrop className={classes.backdrop} open={loaded}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
         <Dialog
           open={dialogOpen}
           onClose={handleDialogClose}

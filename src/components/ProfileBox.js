@@ -159,16 +159,16 @@ function ProfileBox(props) {
 
       const openDialog = async () => {
         setMenuOpen(null);
-        try{
-          await loadBlockchain()
-        } catch(Error) {
-          setWeb3Loaded(false);
-        }
-        if(web3Loaded){
+        // try{
+        //   await loadBlockchain()
+        // } catch(Error) {
+        //   setWeb3Loaded(false);
+        // }
+        // if(web3Loaded){
           setBuyAmount(0)
           setSellAmount(0)
           setDialogOpen(true)
-        }
+        // }
       }
 
       const openHelp = () => {

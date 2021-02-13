@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
         const user = {username: userValue, password: passValue}
       // Auth.register(user).then((data) => {
       //   if(!data.msgError)
-        setLoading(true)
+        setLoading(current => !current)
         Auth.login(user).then((data) => {
         const { user, isAuthenticated, message } = data
         authContext.setUser(user)
@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
             setDialogTitle('Uh Oh')
             setDialogText("Looks like that username and password are invalid. Give it another try")
         }
-        setLoading(false)
+        setLoading(current => !current)
         })
       //     else
       //       alert(`Error occured registering user`)

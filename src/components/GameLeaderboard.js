@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { grey } from '@material-ui/core/colors'
+import { grey, cyan } from '@material-ui/core/colors'
 import { makeStyles } from '@material-ui/core/styles'
 import LeaderboardItem from './LeaderboardItem'
 import { Button, Card, Typography } from '@material-ui/core'
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     list: {
         background: 'linear-gradient(45deg, #113C70, #3D0757)',
         height: '100%',
-        width: 'calc(100% + 18px)',
+        width: '100%',
         overflow: 'auto',
         height: 225,
     },
@@ -44,6 +44,9 @@ const useStyles = makeStyles({
     },
     grey: {
         color: grey[100],
+    },
+    cyan: {
+        color: cyan[100],
     }
 })
 
@@ -89,7 +92,7 @@ function GameLeaderboard(props) {
             </div>
         </Card>
         <Card className={classes.userList}>
-            <Typography className={classes.grey}><EmojiEvents/> Rank {userRank}</Typography>
+            <Typography className={classes.grey}><EmojiEvents/> Rank: <span className={classes.cyan}>{userRank}</span></Typography>
         </Card>
     </React.Fragment>
 
