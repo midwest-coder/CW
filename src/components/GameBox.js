@@ -130,10 +130,10 @@ function endlessWar() {
                         Endless War
                     </Typography>
                     <Typography variant="subtitle1" className={classes.text} align="center">
-                        For anyone who enjoys old school shooters, like Contra, this game is made for you.
-                        Endless War is a blend of a sandbox shooter meets io. 
-                        It will cost credits to get into the game and each kill will earn you a credit.
-                        A simple game to pick up but still brings loads of fun and potential profits.
+                        For anyone who enjoys a good old top down shooter this game is for you.
+                        Endless War is a free for all where every kill earns you credits back.
+                        There are streak bonuses and progressives to give people a chance 
+                        at great rewards. A simple, yet challenging, game that can lead to potential profits.
                         Download today and see if you have what it takes to battle in the Endless War.
                     </Typography>
                     <Typography align="center">

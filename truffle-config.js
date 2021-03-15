@@ -1,9 +1,10 @@
 require("dotenv").config()
-require('babel-register');
-require('babel-polyfill');
+require('babel-register')
+require('babel-polyfill')
 const HDWalletProvider = require("@truffle/hdwallet-provider")
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
+const mnemonic = process.env.MNEMONIC.trim()
 // const GOERLI_KEY = "67776afcab7646549ef71a43736a8edc";
 
 module.exports = {
@@ -13,13 +14,13 @@ module.exports = {
       port: 7545,
       network_id: "*" // Match any network id
     },
-    // matic: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://rpc-mumbai.matic.today`),
-    //   network_id: 80001,
-    //   confirmations: 2,
-    //   timeoutBlocks: 200,
-    //   skipDryRun: true
-    // },
+    matic: {
+      provider: () => new HDWalletProvider(mnemonic, `https://rpc-mainnet.matic.today`),
+      network_id: 137,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
     goerli: {
       provider: () => {
         // console.log(env.INFURA_API_KEY)

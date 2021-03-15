@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.7.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -22,10 +22,8 @@ contract BSBack {
         IERC20(_token).transferFrom(msg.sender, address(this), _amount);
     }
 
-    // Unstaking Tokens (Withdraw)
     function collect(address _token, address _account, uint256 _amount) external onlyAdmin() {
-        uint256 weiAmount = _amount;
-        IERC20(_token).transfer(address(_account), weiAmount);
+        IERC20(_token).transfer(address(_account), _amount);
     }
 
     function recieve() payable external {}

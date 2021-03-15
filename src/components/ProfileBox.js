@@ -1,18 +1,19 @@
 import React, { useState, useContext } from 'react'
 import { Button, Card, Grid, Typography, Dialog, DialogTitle, DialogContent, 
     Box, DialogContentText, DialogActions, Tab, Tabs, TextField, InputAdornment } from '@material-ui/core'
+import HDWalletProvider from '@truffle/hdwallet-provider'
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { grey, lightBlue, purple } from '@material-ui/core/colors'
 import { AttachMoney, Face, MonetizationOn } from '@material-ui/icons'
 import Web3 from 'web3'
-import BSBack from '../abis/BSBack.json'
-import DaiToken from '../abis/DaiToken.json'
 import daiLogo from '../images/dai.png'
 import Auth from '../services/Auth'
 import { AuthContext } from '../context/AuthContext'
 import HelpDialog from './HelpDialog'
 import ProfileMenu from './ProfileMenu'
+require('dotenv').config()
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -107,23 +108,25 @@ const useStyles = makeStyles({
 function ProfileBox(props) {
     const classes = useStyles()
     const { user,setUser, isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
-    const [menuOpen, setMenuOpen] = useState(null);
+    const [menuOpen, setMenuOpen] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(false)
     const [helpOpen, setHelpOpen] = useState(false)
     const [inputError, setInputError] = useState(false)
     const [disableButton, setDisableButton] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const dialogContent = ''
-    const [tabValue, setTabValue] = useState(0);
-    const [web3Loaded, setWeb3Loaded] = useState(true);
-    const [buyAmount, setBuyAmount] = useState(0);
-    const [sellAmount, setSellAmount] = useState(0);
+    const [tabValue, setTabValue] = useState(0)
+    const [web3, setWeb3] = useState(true)
+    const [web3Loaded, setWeb3Loaded] = useState(true)
+    const [siteAccount, setSiteAccount] = useState(true)
+    const [buyAmount, setBuyAmount] = useState(0)
+    const [sellAmount, setSellAmount] = useState(0)
+    const [matic , setMatic] = useState({})
     const [account, setAccount] = useState('0')
     const [accountDisplay, setAccountDisplay] = useState('0')
     const [daiToken, setDaiToken] = useState({})
-    const [bsBack, setBSBack] = useState({})
+    const [cbBack, setCBBack] = useState({})
     const tokenAddress = ''
-    const admin = '0x030a2fDC69431eD2b96E9651B0e10AD12a231638'
 
     const setLoading = (value) => {
       props.setLoading(value)
@@ -142,7 +145,7 @@ function ProfileBox(props) {
       setDisableButton(false)
       setInputError(false)
       setErrorMessage('')
-    setTabValue(newValue)
+      setTabValue(newValue)
   };
 
     const handleChangeIndex = (index) => {
@@ -159,16 +162,16 @@ function ProfileBox(props) {
 
       const openDialog = async () => {
         setMenuOpen(null);
-        // try{
-        //   await loadBlockchain()
-        // } catch(Error) {
-        //   setWeb3Loaded(false);
-        // }
-        // if(web3Loaded){
+        try{
+          await loadBlockchain()
+        } catch(error) {
+          setWeb3Loaded(false);
+        }
+        if(web3Loaded){
           setBuyAmount(0)
           setSellAmount(0)
           setDialogOpen(true)
-        // }
+        }
       }
 
       const openHelp = () => {
@@ -196,34 +199,166 @@ function ProfileBox(props) {
       }
 
       const loadBlockchainData = async () => {
-        const web3 = window.web3
-    
+        const userWeb3 = window.web3
+        setWeb3(userWeb3)
+        // setSiteAccount(siteWeb3)
+        
         const accounts = await web3.eth.getAccounts()
         setAccount(accounts[0])
         setAccountDisplay(accounts[0].slice(0,6))
+ 
         
         const networkId = await web3.eth.net.getId()
         
-        // Load DaiToken
-        //address 0x15391726683672fe8102a406d44792C387E03dF5
-        const daiTokenData = DaiToken.networks[networkId]
-        if(daiTokenData) {
-          const _daiToken = new web3.eth.Contract(DaiToken.abi, daiTokenData.address)
-          setDaiToken(_daiToken)
+        if(networkId == 137){       
+
+          const DAI_TOKEN_ABI = [{"inputs":[{"internalType":"uint256","name":"chainId_","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"guy","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[],"name":"DOMAIN_SEPARATOR","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"PERMIT_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"guy","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"mint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"move","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"nonces","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"holder","type":"address"},{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"},{"internalType":"bool","name":"allowed","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"permit","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"pull","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"push","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"guy","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"version","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]
+          const DAI_TOKEN_ADDRESS = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
+          const DAI_TOKEN = new web3.eth.Contract(DAI_TOKEN_ABI, DAI_TOKEN_ADDRESS)
+          setDaiToken(DAI_TOKEN)
+
+          // const CBBACK_CONTRACT_ABI = [
+          //     {
+          //       "inputs": [
+          //         {
+          //           "internalType": "address",
+          //           "name": "_newOwner",
+          //           "type": "address"
+          //         }
+          //       ],
+          //       "name": "changeOwner",
+          //       "outputs": [],
+          //       "stateMutability": "nonpayable",
+          //       "type": "function"
+          //     },
+          //     {
+          //       "inputs": [
+          //         {
+          //           "internalType": "uint256",
+          //           "name": "passcode",
+          //           "type": "uint256"
+          //         }
+          //       ],
+          //       "name": "changePassword",
+          //       "outputs": [],
+          //       "stateMutability": "nonpayable",
+          //       "type": "function"
+          //     },
+          //     {
+          //       "inputs": [
+          //         {
+          //           "internalType": "address",
+          //           "name": "_token",
+          //           "type": "address"
+          //         },
+          //         {
+          //           "internalType": "uint256",
+          //           "name": "_passcode",
+          //           "type": "uint256"
+          //         },
+          //         {
+          //           "internalType": "uint256",
+          //           "name": "_amount",
+          //           "type": "uint256"
+          //         }
+          //       ],
+          //       "name": "collect",
+          //       "outputs": [],
+          //       "stateMutability": "nonpayable",
+          //       "type": "function"
+          //     },
+          //     {
+          //       "inputs": [
+          //         {
+          //           "internalType": "address",
+          //           "name": "_token",
+          //           "type": "address"
+          //         },
+          //         {
+          //           "internalType": "uint256",
+          //           "name": "_amount",
+          //           "type": "uint256"
+          //         }
+          //       ],
+          //       "name": "deposit",
+          //       "outputs": [],
+          //       "stateMutability": "nonpayable",
+          //       "type": "function"
+          //     },
+          //     {
+          //       "inputs": [],
+          //       "name": "recieve",
+          //       "outputs": [],
+          //       "stateMutability": "payable",
+          //       "type": "function"
+          //     },
+          //     {
+          //       "inputs": [],
+          //       "stateMutability": "nonpayable",
+          //       "type": "constructor"
+          //     },
+          //     {
+          //       "inputs": [
+          //         {
+          //           "internalType": "address",
+          //           "name": "_token",
+          //           "type": "address"
+          //         }
+          //       ],
+          //       "name": "checkBalance",
+          //       "outputs": [
+          //         {
+          //           "internalType": "uint256",
+          //           "name": "balance",
+          //           "type": "uint256"
+          //         }
+          //       ],
+          //       "stateMutability": "view",
+          //       "type": "function"
+          //     },
+          //     {
+          //       "inputs": [],
+          //       "name": "name",
+          //       "outputs": [
+          //         {
+          //           "internalType": "string",
+          //           "name": "",
+          //           "type": "string"
+          //         }
+          //       ],
+          //       "stateMutability": "view",
+          //       "type": "function"
+          //     }
+          //   ]
           
+          // const CBBACK_CONTRACT_ADDRESS = "0x620a6019117769C4c59d4c32Eda08ea9A60077f4"
+          // const CBBACK_CONTRACT = new web3.eth.Contract(CBBACK_CONTRACT_ABI, CBBACK_CONTRACT_ADDRESS)
+          // setCBBack(CBBACK_CONTRACT)
+          // console.log(CBBACK_CONTRACT)
+
+          
+          // const maticTemp = new Maticjs({
+          //   maticProvider: config.MATIC_PROVIDER,
+          //   parentProvider: config.PARENT_PROVIDER,
+          //   rootChain: config.ROOTCHAIN_ADDRESS,
+          //   withdrawManager: config.WITHDRAWMANAGER_ADDRESS,
+          //   depositManager: config.DEPOSITMANAGER_ADDRESS,
+          //   registry: config.REGISTRY,
+          // })
+          // setMatic(maticTemp)
+          // await matic.initialize()
+          // matic.setWallet(config.PRIVATE_KEY)
+        // Load DaiToken
+        // address 0x15391726683672fe8102a406d44792C387E03dF5
+        // const DAI_ABI = {}
+        // const DAI_ADDRESS = ''
+        // const DAI_TOKEN =  new web3.eth.Contract(DAI_ABI, DAI_ADDRESS)
+        // setDaiToken(DAI_TOKEN)
+          // const BSBackData = BSBack.networks[networkId]
+          // const _bsBack = new web3.eth.Contract(BSBack.abi, BSBackData.address)
+          // setBSBack(_bsBack)
         } else {
-          alert('DaiToken contract not deployed to detected network.')
-          throw Error;
-        }
-        
-        // Load BSBack
-        //address 0xe6b7E811690103db6CB3c02bfa097e57e6a3E41D
-        const BSBackData = BSBack.networks[networkId]
-        if(BSBackData) {
-          const _bsBack = new web3.eth.Contract(BSBack.abi, BSBackData.address)
-          setBSBack(_bsBack)
-        } else {
-          alert('Crypto Wars smart contract not deployed to detected network.')
+            alert('Change your metamask network to Matic Network and reload the page')
           throw Error;
         }
       }
@@ -236,27 +371,62 @@ function ProfileBox(props) {
           if(data.isAuthenticated){
             const balance = data.user.balance
             const amount = parseInt(balance) + parseInt(buyAmount)
+            const tokenAmount = Web3.utils.toWei((buyAmount / 10).toString(), 'ether')
+            // const SITE_ADDRESS = "0x620a6019117769C4c59d4c32Eda08ea9A60077f4"
             const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
-              // daiToken.methods.approve(bsBack._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 }).on('transactionHash', (hash) => {
-              // bsBack.methods.buyCoins(daiToken._address, Web3.utils.toWei(buyAmount)).send({ from: account, gas: 500000 })
-              //   .on('transactionHash', (hash) => {
-              //     setLoading(false)
-              //   })
-              //   .on('receipt', (receipt) => {
-                Auth.updateTokens(user, amount).then((data) => {
-                  const { msgBody, msgError } = data.message
-                  if(!msgError)
-                    setUser(tempUser)
-                  else
-                    alert(msgBody)
+                daiToken.methods.transfer(cbBack.address, tokenAmount).send({ from: account, gas: 50000 })
+                .on('transactionHash', (hash) => {
+                  setLoading(false)
                 })
-              }
+                .on('receipt', (receipt) => {
+                  Auth.updateTokens(user, amount).then((data) => {
+                    const { msgBody, msgError } = data.message
+                    if(!msgError)
+                      setUser(tempUser)
+                    else
+                      alert(msgBody)
+                  })
+                })
+              setLoading(false)
+            }
           })
-            //   })
-            // })
-          setLoading(false)
         // props.buyCoins(buyAmount)
       }
+      
+      // const buyCoins = (e) => {
+      //   e.preventDefault()
+      //   setDialogOpen(false)
+      //   setLoading(true)
+      //   Auth.isAuthenticated().then((data) => {
+      //     if(data.isAuthenticated){
+      //       console.log(`matic: ${matic}`)
+      //       const token = config.DAI_TOKEN
+      //       const from = config.SITE_ADDRESS
+      //       const to = account
+      //       let amount = parseInt(buyAmount)
+      //       console.log(`token: ${token}`)
+      //       console.log(`to: ${to}`)
+      //       console.log(`from: ${from}`)
+      //       console.log(`amount: ${amount}`)
+      //       try {
+      //           // Transfer ERC20 Tokens
+      //           matic.transferERC20Tokens(token, to, amount, {
+      //             from: from, gas: 5000
+      //           }).then((res) => {
+      //             const balance = data.user.balance
+      //             amount = parseInt(balance) + parseInt(buyAmount)
+      //             const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
+      //             setLoading(false)
+      //             setUser(tempUser)
+      //             alert(`Transaction complete: hash ${res.transactionHash}`)
+      //           })
+      //       } catch(error) {
+      //         setLoading(false)
+      //         alert(error.message)
+      //       }
+      //     }
+      //   })
+      // }
 
       const sellCoins = (e) => {
         e.preventDefault()
@@ -268,26 +438,32 @@ function ProfileBox(props) {
           setLoading(true)
           const tempUser = user
           const temBalance = balance
+          const tokenAmount = Web3.utils.toWei((buyAmount / 10).toString(), 'ether')
           tempUser.balance = amount
+          // const tokenAmount = Web3.utils.toWei((buyAmount / 10).toString(), 'ether')
           Auth.updateTokens(user, amount).then((data) => {
             const { msgBody, msgError } = data.message
-            // alert(Web3.utils.toWei(amount, "ether"))
             if(!msgError){
-              // bsBack.methods.collectFunds(daiToken._address, account, sellAmount).send({ from: admin, gas: 500000 })
-              //   .on('transactionHash', (hash) => {
-              //       setLoading(false)
-              //     })
-              //     .on('receipt', (error, receipt) => {
-              //       setUser(tempUser)
-              //     })
-              //     .on('error', (error, receipt) => {
-              //       Auth.updateTokens(user, temBalance).then((data) => {
-              //         const { msgBody, msgError } = data.message
-              //         if(msgError)
-              //           alert(msgBody)
-              //         })
-              //         // setUser(_user)
-              //       })
+              // const SITE_ACCOUNT = web3.eth.accounts.privateKeyToAccount(process.env.PRIVATE_KEY);
+              // web3.eth.personal.unlockAccount(SITE_ACCOUNT.address, process.env.PASS, 600,
+                // () => {
+                  console.log("unlocked account")
+                  daiToken.methods.transfer(account, tokenAmount).send({ from: siteAccount, gas: 50000 })
+                    .on('transactionHash', (hash) => {
+                        setLoading(false)
+                      })
+                      .on('receipt', (error, receipt) => {
+                        setUser(tempUser)
+                      })
+                      .on('error', (error, receipt) => {
+                        Auth.updateTokens(user, temBalance).then((data) => {
+                          const { msgBody, msgError } = data.message
+                          if(msgError)
+                            alert(msgBody)
+                          })
+                          // setUser(_user)
+                        })
+                  // })
             }
             else
               alert(msgBody)

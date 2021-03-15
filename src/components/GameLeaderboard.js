@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     list: {
         background: 'linear-gradient(45deg, #113C70, #3D0757)',
         height: '100%',
-        width: '100%',
+        width: 'calc(100% + 18px)',
         overflow: 'auto',
         height: 225,
     },
