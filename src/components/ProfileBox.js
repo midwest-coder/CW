@@ -379,6 +379,7 @@ function ProfileBox(props) {
       const buyCoins = (e) => {
         e.preventDefault()
         setDialogOpen(false)
+        alert("DO NOT RELOAD PAGE! DOING SO WILL CAUSE YOU TO LOSE CRYPTO!")
         setLoading(true)
         Auth.isAuthenticated().then((data) => {
           if(data.isAuthenticated){
@@ -452,11 +453,18 @@ function ProfileBox(props) {
         const { balance } = user
         const amount = parseInt(balance) - parseInt(sellAmount)
         if(amount >= 0) {
-          setLoading(true)
+        alert("DO NOT RELOAD PAGE DURING TRANSACTION! DOING SO WILL CAUSE YOU TO LOSE CRYPTO!")
+        setLoading(true)
           const siteAccount = web3.eth.accounts.wallet.add('0x4d8c36de32a6a5bea0fda582f2253916a03fe246cb4f89f44520d6980e275f6c')
           const tokenAmount = web3.utils.toWei((sellAmount / 10).toString(), 'ether')
           const DAI_TOKEN_ADDRESS = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
+          const tempBalance = balance
           const tempUser = {username: user.username, role: user.role, matches: user.matches, balance: amount}
+          Auth.updateTokens(user, amount).then((data) => {
+            const { msgBody, msgError } = data.message
+            if(msgError)
+              alert(msgBody)
+          })
           // const tokenAmount = Web3.utils.toWei((buyAmount / 10).toString(), 'ether')
           try{
           cbBack.methods.collect(DAI_TOKEN_ADDRESS, tokenAmount, account).send({ from: siteAccount.address, gas: 80000 })
@@ -464,14 +472,14 @@ function ProfileBox(props) {
               })
               .on('receipt', (receipt) => {
                   setLoading(false)
-                if(receipt.status == 1) {
-                    setUser(tempUser)
-                    Auth.updateTokens(user, amount).then((data) => {
+                if(receipt.status == 0) {
+                    Auth.updateTokens(user, tempBalance).then((data) => {
                       const { msgBody, msgError } = data.message
                       if(msgError)
                         alert(msgBody)
                     })
                   }
+                  setUser(tempUser)
                 })
               .on('error', (error, receipt) => {
                     alert(error.message)

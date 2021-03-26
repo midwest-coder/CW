@@ -134,7 +134,7 @@ function endlessWar() {
                         Endless War is a free for all where every kill earns you credits back.
                         There are streak bonuses and progressives to give people a chance 
                         at great rewards. A simple, yet challenging, game that can lead to potential profits.
-                        Download today and see if you have what it takes to battle in the Endless War.
+                        Download today and see if you have what it takes to enter the battle.
                     </Typography>
                     <Typography align="center">
                         <Button
