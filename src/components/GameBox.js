@@ -142,7 +142,7 @@ function endlessWar() {
                             endIcon={<CloudDownload />} 
                             size="large"
                             variant="contained"
-                            href="game/Endless_War_V0.1.6.zip"
+                            href="game/V0.1.2.zip"
                             download="Endless War">    
                                 Download Game
                         </Button>

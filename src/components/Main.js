@@ -3,8 +3,10 @@ import Auth from '../services/Auth'
 import ProfileBox from './ProfileBox'
 import Banner from './Banner'
 import GameBox from './GameBox'
+import ProfilePage from './ProfilePage'
 
 function Main(props) {
+  const [profileOpen, setProfileOpen] = useState(false)
   const [leaderboards, setLeaderboards] = useState([])
   const [matches, setMatches] = useState([])
   const [totalKills, setTotalKills] = useState(0)
@@ -53,19 +55,28 @@ const setBoards = (_users, _matches) => {
 
   const setLoading = (value) => {
     props.setLoading(value)
+  }    
+  const setAlert = (value) => {
+    props.setAlert(value)
   }
+
+  let content
+  if(profileOpen)
+    content = <ProfilePage setProfileOpen={setProfileOpen}/>
+      else
+        content = <GameBox 
+        user={props.user}
+        leaderboards={leaderboards} 
+        matches={matches} 
+        totalKills={totalKills} 
+        totalPoints={totalPoints} 
+        userKills={userKills} />
 
     return (
       <React.Fragment>
         <Banner />
-        <ProfileBox setLoading={setLoading}/>
-        <GameBox 
-          user={props.user}
-          leaderboards={leaderboards} 
-          matches={matches} 
-          totalKills={totalKills} 
-          totalPoints={totalPoints} 
-          userKills={userKills} />
+        <ProfileBox setLoading={setLoading} setAlert={setAlert} setProfileOpen={setProfileOpen}/>
+        {content}
       </React.Fragment>
     );
 }

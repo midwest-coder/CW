@@ -60,8 +60,36 @@ export default {
             return { isAuthenticated: false, user: {username: '', role: '', balance: ''}}
         })
     },
+    createTransaction: (user,type, amount) => {
+        return fetch(`/user/createTransaction/${type}/${amount}`, {
+            method: "post",
+            body: JSON.stringify(user),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((res) => res.json()).then((data) => data)
+    },
+    updateTransaction: (user, id, hash, status) => {
+        return fetch(`/user/updateTransaction/${id}/${hash}/${status}`, {
+            method: "put",
+            body: JSON.stringify(user),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((res) => res.json()).then((data) => {
+            return data
+        })
+    },
+    getTransactions: () => {
+        return fetch('/user/getTransaction').then((res) => {
+            if(res.status === 200)
+                return res.json().then((data) => data)
+            else
+                return null
+        })
+    },
     checkUser: (username) => {
-        console.log(username)
         return fetch(`/user/checkUser/${username}`).then((res) => {
             if(res.status !== 404)
             return res.json().then((data) => data)

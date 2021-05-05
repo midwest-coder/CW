@@ -108,7 +108,7 @@ const useStyles = makeStyles({
 
 function ProfileBox(props) {
     const classes = useStyles()
-    const { user,setUser, isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
+    const { user,setUser, isAuthenticated, setIsAuthenticated, web3, setWeb3 } = useContext(AuthContext)
     const [menuOpen, setMenuOpen] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(false)
     const [helpOpen, setHelpOpen] = useState(false)
@@ -116,8 +116,7 @@ function ProfileBox(props) {
     const [disableButton, setDisableButton] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const [tabValue, setTabValue] = useState(0)
-    const [web3, setWeb3] = useState(true)
-    const [web3Loaded, setWeb3Loaded] = useState(true)
+    // const [web3Loaded, setWeb3Loaded] = useState(true)
     const [siteAccount, setSiteAccount] = useState(true)
     const [buyAmount, setBuyAmount] = useState(0)
     const [sellAmount, setSellAmount] = useState(0)
@@ -129,6 +128,12 @@ function ProfileBox(props) {
 
     const setLoading = (value) => {
       props.setLoading(value)
+    }
+    const setAlert = (value) => {
+      props.setAlert(value)
+    }
+    const setProfileOpen = (value) => {
+      props.setProfileOpen(value)
     }
 
     const setUsername = () => {
@@ -160,13 +165,14 @@ function ProfileBox(props) {
       };
 
       const openDialog = async () => {
-        setMenuOpen(null);
+        let loaded = true
+        setMenuOpen(null)
         try{
           await loadBlockchain()
         } catch(error) {
-          setWeb3Loaded(false);
+          loaded = false
         }
-        if(web3Loaded){
+        if(loaded){
           setBuyAmount(0)
           setSellAmount(0)
           setDialogOpen(true)
@@ -176,6 +182,11 @@ function ProfileBox(props) {
       const openHelp = () => {
         setMenuOpen(null);
         setHelpOpen(true)
+      }
+
+      const openProfile = () => {
+        setMenuOpen(null);
+        setProfileOpen(true)
       }
 
       const loadBlockchain = async () => {
@@ -192,13 +203,28 @@ function ProfileBox(props) {
             window.web3 = new Web3(window.web3.currentProvider)
           }
           else {
-            window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+          setAlert({
+            open:true,
+            duration:6000,
+            anchor:{
+              vertical: 'top',
+              horizontal: 'center',
+            },
+            message:"Looks like we couldn't find Metamask on your computer. Do us a favor and get that installed to your chrome browser",
+            action:true,
+            actionType:"Metamask"
+          })
+            // <ErrorAlert duration={20000}>
+            //   <p>Download Metamask and connect your wallet</p>
+            // </ErrorAlert>
+            throw Error
           }
       }
 
       const loadBlockchainData = async () => {
         const userWeb3 = window.web3
         setWeb3(userWeb3)
+        console.log(userWeb3)
         // setSiteAccount(siteWeb3)
         
         const accounts = await userWeb3.eth.getAccounts()
@@ -226,160 +252,42 @@ function ProfileBox(props) {
           const CB_BACK_ADDRESS = "0xc8A52C4999d703D3C84208e66E9C518de0d893ac"
           const CB_BACK = new userWeb3.eth.Contract(CB_BACK_ABI, CB_BACK_ADDRESS)
           setCBBack(CB_BACK)
-        }
-        catch(error) {
-          alert(error.message)
-        }
-          // const CBBACK_CONTRACT_ABI = [
-          //     {
-          //       "inputs": [
-          //         {
-          //           "internalType": "address",
-          //           "name": "_newOwner",
-          //           "type": "address"
-          //         }
-          //       ],
-          //       "name": "changeOwner",
-          //       "outputs": [],
-          //       "stateMutability": "nonpayable",
-          //       "type": "function"
-          //     },
-          //     {
-          //       "inputs": [
-          //         {
-          //           "internalType": "uint256",
-          //           "name": "passcode",
-          //           "type": "uint256"
-          //         }
-          //       ],
-          //       "name": "changePassword",
-          //       "outputs": [],
-          //       "stateMutability": "nonpayable",
-          //       "type": "function"
-          //     },
-          //     {
-          //       "inputs": [
-          //         {
-          //           "internalType": "address",
-          //           "name": "_token",
-          //           "type": "address"
-          //         },
-          //         {
-          //           "internalType": "uint256",
-          //           "name": "_passcode",
-          //           "type": "uint256"
-          //         },
-          //         {
-          //           "internalType": "uint256",
-          //           "name": "_amount",
-          //           "type": "uint256"
-          //         }
-          //       ],
-          //       "name": "collect",
-          //       "outputs": [],
-          //       "stateMutability": "nonpayable",
-          //       "type": "function"
-          //     },
-          //     {
-          //       "inputs": [
-          //         {
-          //           "internalType": "address",
-          //           "name": "_token",
-          //           "type": "address"
-          //         },
-          //         {
-          //           "internalType": "uint256",
-          //           "name": "_amount",
-          //           "type": "uint256"
-          //         }
-          //       ],
-          //       "name": "deposit",
-          //       "outputs": [],
-          //       "stateMutability": "nonpayable",
-          //       "type": "function"
-          //     },
-          //     {
-          //       "inputs": [],
-          //       "name": "recieve",
-          //       "outputs": [],
-          //       "stateMutability": "payable",
-          //       "type": "function"
-          //     },
-          //     {
-          //       "inputs": [],
-          //       "stateMutability": "nonpayable",
-          //       "type": "constructor"
-          //     },
-          //     {
-          //       "inputs": [
-          //         {
-          //           "internalType": "address",
-          //           "name": "_token",
-          //           "type": "address"
-          //         }
-          //       ],
-          //       "name": "checkBalance",
-          //       "outputs": [
-          //         {
-          //           "internalType": "uint256",
-          //           "name": "balance",
-          //           "type": "uint256"
-          //         }
-          //       ],
-          //       "stateMutability": "view",
-          //       "type": "function"
-          //     },
-          //     {
-          //       "inputs": [],
-          //       "name": "name",
-          //       "outputs": [
-          //         {
-          //           "internalType": "string",
-          //           "name": "",
-          //           "type": "string"
-          //         }
-          //       ],
-          //       "stateMutability": "view",
-          //       "type": "function"
-          //     }
-          //   ]
-          
-          // const CBBACK_CONTRACT_ADDRESS = "0x620a6019117769C4c59d4c32Eda08ea9A60077f4"
-          // const CBBACK_CONTRACT = new web3.eth.Contract(CBBACK_CONTRACT_ABI, CBBACK_CONTRACT_ADDRESS)
-          // setCBBack(CBBACK_CONTRACT)
-          // console.log(CBBACK_CONTRACT)
-
-          
-          // const maticTemp = new Maticjs({
-          //   maticProvider: config.MATIC_PROVIDER,
-          //   parentProvider: config.PARENT_PROVIDER,
-          //   rootChain: config.ROOTCHAIN_ADDRESS,
-          //   withdrawManager: config.WITHDRAWMANAGER_ADDRESS,
-          //   depositManager: config.DEPOSITMANAGER_ADDRESS,
-          //   registry: config.REGISTRY,
-          // })
-          // setMatic(maticTemp)
-          // await matic.initialize()
-          // matic.setWallet(config.PRIVATE_KEY)
-        // Load DaiToken
-        // address 0x15391726683672fe8102a406d44792C387E03dF5
-        // const DAI_ABI = {}
-        // const DAI_ADDRESS = ''
-        // const DAI_TOKEN =  new web3.eth.Contract(DAI_ABI, DAI_ADDRESS)
-        // setDaiToken(DAI_TOKEN)
-          // const BSBackData = BSBack.networks[networkId]
-          // const _bsBack = new web3.eth.Contract(BSBack.abi, BSBackData.address)
-          // setBSBack(_bsBack)
+          }
+          catch(error) {
+            alert(error.message)
+          }
         } else {
-          alert('Change your metamask network to Matic Network and reload the page')
-          throw Error;
+          setAlert({
+            open:true,
+            duration:20000,
+            anchor:{
+              vertical: 'top',
+              horizontal: 'center',
+            },
+            message:"We use the Matic Network for our platform. Switch your network to continue",
+            action:false,
+            actionType:"Matic"
+          })
+          throw Error
+          // const open = true;
+          // const duration = 20000;
+          // throw Error;
         }
       }
 
       const buyCoins = (e) => {
         e.preventDefault()
         setDialogOpen(false)
-        alert("DO NOT RELOAD PAGE! DOING SO WILL CAUSE YOU TO LOSE CRYPTO!")
+        setAlert({
+          open:true,
+          duration:6000,
+          anchor:{
+            vertical: 'top',
+            horizontal: 'center',
+          },
+          message:"Make sure you don't refresh the page as it may result in a loss of crypto",
+          action:false
+        })
         setLoading(true)
         Auth.isAuthenticated().then((data) => {
           if(data.isAuthenticated){
@@ -388,25 +296,94 @@ function ProfileBox(props) {
             const tokenAmount = web3.utils.toWei((buyAmount / 10).toString(), 'ether')
             const SITE_ADDRESS = "0xc8A52C4999d703D3C84208e66E9C518de0d893ac"
             const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
+            let transHash = '0'
+            let status = 'Processing'
+            const type = 'Buy'
+            Auth.createTransaction(user,type,buyAmount).then((data) => {
+              const { msgBody, msgError } = data
+              if(msgError){
+                setAlert({
+                  open:true,
+                  duration:20000,
+                  anchor:{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  },
+                  message:msgBody,
+                  action:false
+                })
+              } else{
+                const transID = msgBody
                 daiToken.methods.transfer(SITE_ADDRESS, tokenAmount).send({ from: account, gas: 80000 })
                 .on('transactionHash', (hash) => {
+                  transHash = hash.toString()
+                  Auth.updateTransaction(user,transID,transHash,status).then(() => {
+                  })
                 })
                 .on('receipt', (receipt) => {
                   setLoading(false)
                   if(receipt.status == 1) {
                     Auth.updateTokens(user, amount).then((data) => {
                       const { msgBody, msgError } = data.message
-                      if(!msgError)
-                        setUser(tempUser)
+                      if(!msgError){
+                        status = 'Success'
+                        Auth.updateTransaction(user,transID,transHash,status).then((data) => {
+                        const { msgBody, msgError } = data
+                        if(!msgError){
+                          setUser(tempUser)
+                          setAlert({
+                            open:true,
+                            duration:20000,
+                            anchor:{
+                              vertical: 'top',
+                              horizontal: 'left',
+                            },
+                            message:"Transaction Successful",
+                            action:false
+                          })
+                        }
+                      })
+                      }
                       else
-                        alert(msgBody)
+                        setAlert({
+                          open:true,
+                          duration:20000,
+                          anchor:{
+                            vertical: 'top',
+                            horizontal: 'left',
+                          },
+                          message:`Error Saving Transaction to Database`,
+                          action:false
+                        })
                     })
                   }
                 })
                 .on('error', (error, receipt) => {
-                      alert(error.message)
-                      setLoading(false)
+                  Auth.updateTokens(user, amount).then((data) => {
+                    const { msgBody, msgError } = data
+                    if(!msgError){
+                      status = 'Error'
+                      Auth.updateTransaction(user,transID,transHash,status).then((data) => {
+                        const { msgBody, msgError } = data
+                        if(!msgError){
+                          setAlert({
+                            open:true,
+                            duration:20000,
+                            anchor:{
+                              vertical: 'top',
+                              horizontal: 'left',
+                            },
+                            message:`Transaction Error`,
+                            action:false
+                          })
+                          setLoading(false)
+                        }
+                      })
+                    }
+                  })
                 })
+                }
+              })
             }
           })
         // props.buyCoins(buyAmount)
@@ -453,45 +430,144 @@ function ProfileBox(props) {
         const { balance } = user
         const amount = parseInt(balance) - parseInt(sellAmount)
         if(amount >= 0) {
-        alert("DO NOT RELOAD PAGE DURING TRANSACTION! DOING SO WILL CAUSE YOU TO LOSE CRYPTO!")
-        setLoading(true)
+          setAlert({
+            open:true,
+            duration:6000,
+            anchor:{
+              vertical: 'top',
+              horizontal: 'center',
+            },
+            message:"Make sure you don't refresh the page as it may result in a loss of crypto",
+            action:false
+          })
+          setLoading(true)
           const siteAccount = web3.eth.accounts.wallet.add('0x4d8c36de32a6a5bea0fda582f2253916a03fe246cb4f89f44520d6980e275f6c')
           const tokenAmount = web3.utils.toWei((sellAmount / 10).toString(), 'ether')
           const DAI_TOKEN_ADDRESS = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
           const tempBalance = balance
           const tempUser = {username: user.username, role: user.role, matches: user.matches, balance: amount}
+          let transHash = '0'
+          let status = 'Processing'
+          const type = 'Sell'
           Auth.updateTokens(user, amount).then((data) => {
             const { msgBody, msgError } = data.message
             if(msgError)
               alert(msgBody)
           })
-          // const tokenAmount = Web3.utils.toWei((buyAmount / 10).toString(), 'ether')
-          try{
-          cbBack.methods.collect(DAI_TOKEN_ADDRESS, tokenAmount, account).send({ from: siteAccount.address, gas: 80000 })
-            .on('transactionHash', (hash) => {
+          Auth.createTransaction(user,type,sellAmount).then((data) => {
+            const { msgBody, msgError } = data
+            if(msgError){
+              setAlert({
+                open:true,
+                duration:20000,
+                anchor:{
+                  vertical: 'top',
+                  horizontal: 'left',
+                },
+                message:'Transaction Error',
+                action:false
               })
-              .on('receipt', (receipt) => {
+            } else {
+                const transID = msgBody
+                cbBack.methods.collect(DAI_TOKEN_ADDRESS, tokenAmount, account).send({ from: siteAccount.address, gas: 80000 })
+                .on('transactionHash', (hash) => {
+                  transHash = hash.toString()
+                  Auth.updateTransaction(user,transID,transHash,status).then(() => {
+                  })
+                  })
+                  .on('receipt', (receipt) => {
                   setLoading(false)
                 if(receipt.status == 0) {
                     Auth.updateTokens(user, tempBalance).then((data) => {
                       const { msgBody, msgError } = data.message
                       if(msgError)
-                        alert(msgBody)
+                      status = 'Error'
+                      Auth.updateTransaction(user,transID,transHash,status).then((data) => {
+                        const { msgBody, msgError } = data
+                        if(!msgError){
+                          setAlert({
+                            open:true,
+                            duration:20000,
+                            anchor:{
+                              vertical: 'top',
+                              horizontal: 'left',
+                            },
+                            message:`Transaction Error`,
+                            action:false
+                          })
+                        }
+                      })
+                    })
+                  } else {
+                    status = 'Success'
+                    Auth.updateTransaction(user,transID,transHash,status).then((data) => {
+                      const { msgBody, msgError } = data
+                      if(!msgError){
+                        setAlert({
+                          open:true,
+                          duration:20000,
+                          anchor:{
+                            vertical: 'top',
+                            horizontal: 'left',
+                          },
+                          message:`Transaction Successful`,
+                          action:false
+                        })
+                      }
                     })
                   }
                   setUser(tempUser)
                 })
-              .on('error', (error, receipt) => {
-                    alert(error.message)
-                    setLoading(false)
-              })
+                .on('error', (error, receipt) => {
+                  Auth.updateTokens(user, tempBalance).then((data) => {
+                    const { msgBody, msgError } = data.message
+                    if(!msgError)
+                    Auth.updateTransaction(user,transID,'Error').then((data) => {
+                      const { msgBody, msgError } = data
+                      if(!msgError){
+                        setAlert({
+                          open:true,
+                          duration:20000,
+                          anchor:{
+                            vertical: 'top',
+                            horizontal: 'left',
+                          },
+                          message:`Transaction Error`,
+                          action:false
+                        })
+                      }
+                    })
+                  })
+                  setLoading(false)
+                })
+              }
+            })
             }
-            catch(error) {
-              alert(error.message)
-            }
-          } else {
+            // catch(error) {
+            //   setAlert({
+            //     open:true,
+            //     duration:6000,
+            //     anchor:{
+            //       vertical: 'bottom',
+            //       horizontal: 'left',
+            //     },
+            //     message:`Transaction Error`,
+            //     action:true
+            //   })
+            // }
+          // } 
+          else {
             setLoading(false)
-            alert("Cannot sell more credits than owned")
+            setAlert({
+              open:true,
+              duration:20000,
+              anchor:{
+                vertical: 'top',
+                horizontal: 'center',
+              },
+              message:`Cannot sell more tokens than owned`,
+              action:true
+            })
           }
       }
 
@@ -711,7 +787,8 @@ function ProfileBox(props) {
                       anchor={menuOpen} 
                       setOpen={setMenuOpen} 
                       onTransfer={openDialog} 
-                      onHelp={openHelp} 
+                      onHelp={openHelp}
+                      onProfile={openProfile} 
                       onLogout={logout}/>
                   {/* <Box display={{ xs: 'none', sm: 'inline' }}>
                   <Button

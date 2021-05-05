@@ -187,6 +187,7 @@ const useStyles = makeStyles((theme) => ({
             setDialogOpen(true)
             setDialogTitle('Uh Oh')
             setDialogText(msgBody)
+            setLoaded(false)
           })
       //     else
       //       alert(`Error occured registering user`)

@@ -1,6 +1,9 @@
 import React, { useState, useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import Loading from './Loading'
+import { Snackbar, Button, IconButton } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
+import AlertBox from './AlertBox'
 // import io from 'socket.io-client'
 import Main from './Main'
 import Navbar from './Navbar'
@@ -18,7 +21,21 @@ import Admin from './Admin/Admin'
 function App() {
   const { isAuthenticated, user, newUser } = useContext(AuthContext)
   const [loading, setLoading] = useState(false)
+  const [alert, setAlert] = useState({
+    open:false,
+    duration:6000,
+    anchor:{
+      vertical: 'bottom',
+      horizontal: 'center',
+    },
+    message:'Okay',
+    action:true
+  })
 
+  const handleClose = (event, reason) => {
+    setAlert(false)
+  }
+  
     let content
     let welcome
     // const loadingContent = <Loading loading={isLoaded} />
@@ -31,7 +48,7 @@ function App() {
         if(user.role === "admin") {
           content = <Admin setLoading={setLoading} />
         } else {
-        content = <Main user={user} setLoading={setLoading} />
+        content = <Main user={user} setLoading={setLoading} setAlert={setAlert} />
       }
     } 
     if(newUser)
@@ -44,6 +61,7 @@ function App() {
       <React.Fragment>
         <Navbar />
           <Container>
+            <AlertBox alert={alert} setAlert={setAlert}/>
             <Loading loading={loading} />
             {welcome}
             {content}

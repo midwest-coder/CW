@@ -4,7 +4,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { AttachMoney, Help, MeetingRoom } from '@material-ui/icons'
+import { AttachMoney, Help, MeetingRoom, AccountCircle } from '@material-ui/icons'
 import { grey } from '@material-ui/core/colors'
 import { Divider } from '@material-ui/core';
 
@@ -50,6 +50,10 @@ export default function CustomizedMenus(props) {
     props.onHelp(true)
   }
 
+  const handleProfile = () => {
+    props.onProfile(true)
+  }
+
   const handleLogout = () => {
     props.onLogout()
   }
@@ -68,6 +72,12 @@ export default function CustomizedMenus(props) {
             <AttachMoney fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Transfer" />
+        </StyledMenuItem>
+        <StyledMenuItem onClick={handleProfile}>
+          <ListItemIcon>
+            <AccountCircle fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Profile" />
         </StyledMenuItem>
         <StyledMenuItem onClick={handleHelp}>
           <ListItemIcon>

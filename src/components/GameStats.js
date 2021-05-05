@@ -14,6 +14,10 @@ const useStyles = makeStyles({
 function GameStats(props) {
     const classes = useStyles()
 
+    const data = props.userKills.filter((d, index) => {
+      return index > props.userKills.length - 20
+    })
+
     let content = (props.user === undefined || props.user.username === '' || props.totalKills === undefined) ? '' :
     <Grid container>
         <Grid item xs={12} sm={4}>
@@ -24,7 +28,8 @@ function GameStats(props) {
             {(props.totalPoints != 1) ? ' Credits' : ' Credit'} </span></Typography>
         </Grid>
         <Grid item xs={12} sm={8}>
-            <LineChart data={props.userKills} height={300} width={350} />
+            <LineChart data={data} height={300} width={350} />
+            <Typography align="center">Last 20 Matches</Typography>
         </Grid>
     </Grid>
 

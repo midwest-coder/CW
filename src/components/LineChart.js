@@ -17,9 +17,9 @@ const options = {
 
 const LineChart = (props) =>{
 // const [matchLabels, setMatchLabels] = useState([])
-let count = 0
+let count = props.data.length + 1
 const labels = props.data.map(() => {
-    count++
+    count--
     return count
 })
  
