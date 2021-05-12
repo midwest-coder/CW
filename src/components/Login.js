@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
   const [dialogTitle, setDialogTitle] = useState('')
   const [userValue, setUserValue] = useState('')
   const [passValue, setPassValue] = useState('')
+  const [save, setSave] = useState(true)
 
   const setLoading = (value) => {
       props.setLoading(value)
@@ -81,11 +82,14 @@ const useStyles = makeStyles((theme) => ({
       setDialogTitle('Hey Wait')
       setDialogText("You didn't even fill out your password ya goof! Do us a solid and get that filled out")
     } else {
-        const user = {username: userValue, password: passValue}
+        let expiration = '4w'
+        if(save)
+          expiration = '4w'
+        const info = {username: userValue, password: passValue, expiration: expiration}
       // Auth.register(user).then((data) => {
       //   if(!data.msgError)
         setLoading(current => !current)
-        Auth.login(user).then((data) => {
+        Auth.login(info).then((data) => {
         const { user, isAuthenticated, message } = data
         authContext.setUser(user)
         authContext.setIsAuthenticated(isAuthenticated)

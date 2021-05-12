@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
     statsBox: {
         background:'black',
+        padding: 10,
         margin: 10
     },
     gamePreview: {

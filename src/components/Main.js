@@ -62,7 +62,7 @@ const setBoards = (_users, _matches) => {
 
   let content
   if(profileOpen)
-    content = <ProfilePage setProfileOpen={setProfileOpen}/>
+    content = <ProfilePage setProfileOpen={setProfileOpen} setLoading={setLoading} setAlert={setAlert}/>
       else
         content = <GameBox 
         user={props.user}

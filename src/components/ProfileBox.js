@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react'
-import { Button, Card, Grid, Typography, Dialog, DialogTitle, DialogContent, 
-    Box, DialogContentText, DialogActions, Tab, Tabs, TextField, InputAdornment } from '@material-ui/core'
+import { Button, Card, Grid, Typography, Dialog, DialogTitle, Chip, 
+    Box, DialogActions, Tab, Tabs, TextField, InputAdornment } from '@material-ui/core'
 import HDWalletProvider from '@truffle/hdwallet-provider'
 import { makeStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 import { grey, lightBlue, purple } from '@material-ui/core/colors'
-import { AttachMoney, Face, MonetizationOn } from '@material-ui/icons'
+import { AttachMoney, Face, MonetizationOn, } from '@material-ui/icons'
 import Web3 from 'web3'
 import daiLogo from '../images/dai.png'
 import Auth from '../services/Auth'
@@ -65,6 +65,9 @@ const useStyles = makeStyles({
     userText: {
         color: lightBlue[600],
         marginRight: 10,
+    },
+    chip: {
+      marginTop: 5
     },
     coins: {
         color: purple[500]
@@ -229,7 +232,9 @@ function ProfileBox(props) {
         
         const accounts = await userWeb3.eth.getAccounts()
         setAccount(accounts[0])
-        setAccountDisplay(accounts[0].slice(0,6))
+        
+        const hash = `${accounts[0].slice(0,6)}...${accounts[0].slice(accounts[0].length - 4,accounts[0].length)}`
+        setAccountDisplay(hash)
  
         
         const networkId = await userWeb3.eth.net.getId()
@@ -277,159 +282,7 @@ function ProfileBox(props) {
 
       const buyCoins = (e) => {
         e.preventDefault()
-        setDialogOpen(false)
-        setAlert({
-          open:true,
-          duration:6000,
-          anchor:{
-            vertical: 'top',
-            horizontal: 'center',
-          },
-          message:"Make sure you don't refresh the page as it may result in a loss of crypto",
-          action:false
-        })
-        setLoading(true)
-        Auth.isAuthenticated().then((data) => {
-          if(data.isAuthenticated){
-            const balance = data.user.balance
-            const amount = parseInt(balance) + parseInt(buyAmount)
-            const tokenAmount = web3.utils.toWei((buyAmount / 10).toString(), 'ether')
-            const SITE_ADDRESS = "0xc8A52C4999d703D3C84208e66E9C518de0d893ac"
-            const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
-            let transHash = '0'
-            let status = 'Processing'
-            const type = 'Buy'
-            Auth.createTransaction(user,type,buyAmount).then((data) => {
-              const { msgBody, msgError } = data
-              if(msgError){
-                setAlert({
-                  open:true,
-                  duration:20000,
-                  anchor:{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  },
-                  message:msgBody,
-                  action:false
-                })
-              } else{
-                const transID = msgBody
-                daiToken.methods.transfer(SITE_ADDRESS, tokenAmount).send({ from: account, gas: 80000 })
-                .on('transactionHash', (hash) => {
-                  transHash = hash.toString()
-                  Auth.updateTransaction(user,transID,transHash,status).then(() => {
-                  })
-                })
-                .on('receipt', (receipt) => {
-                  setLoading(false)
-                  if(receipt.status == 1) {
-                    Auth.updateTokens(user, amount).then((data) => {
-                      const { msgBody, msgError } = data.message
-                      if(!msgError){
-                        status = 'Success'
-                        Auth.updateTransaction(user,transID,transHash,status).then((data) => {
-                        const { msgBody, msgError } = data
-                        if(!msgError){
-                          setUser(tempUser)
-                          setAlert({
-                            open:true,
-                            duration:20000,
-                            anchor:{
-                              vertical: 'top',
-                              horizontal: 'left',
-                            },
-                            message:"Transaction Successful",
-                            action:false
-                          })
-                        }
-                      })
-                      }
-                      else
-                        setAlert({
-                          open:true,
-                          duration:20000,
-                          anchor:{
-                            vertical: 'top',
-                            horizontal: 'left',
-                          },
-                          message:`Error Saving Transaction to Database`,
-                          action:false
-                        })
-                    })
-                  }
-                })
-                .on('error', (error, receipt) => {
-                  Auth.updateTokens(user, amount).then((data) => {
-                    const { msgBody, msgError } = data
-                    if(!msgError){
-                      status = 'Error'
-                      Auth.updateTransaction(user,transID,transHash,status).then((data) => {
-                        const { msgBody, msgError } = data
-                        if(!msgError){
-                          setAlert({
-                            open:true,
-                            duration:20000,
-                            anchor:{
-                              vertical: 'top',
-                              horizontal: 'left',
-                            },
-                            message:`Transaction Error`,
-                            action:false
-                          })
-                          setLoading(false)
-                        }
-                      })
-                    }
-                  })
-                })
-                }
-              })
-            }
-          })
-        // props.buyCoins(buyAmount)
-      }
-      
-      // const buyCoins = (e) => {
-      //   e.preventDefault()
-      //   setDialogOpen(false)
-      //   setLoading(true)
-      //   Auth.isAuthenticated().then((data) => {
-      //     if(data.isAuthenticated){
-      //       console.log(`matic: ${matic}`)
-      //       const token = config.DAI_TOKEN
-      //       const from = config.SITE_ADDRESS
-      //       const to = account
-      //       let amount = parseInt(buyAmount)
-      //       console.log(`token: ${token}`)
-      //       console.log(`to: ${to}`)
-      //       console.log(`from: ${from}`)
-      //       console.log(`amount: ${amount}`)
-      //       try {
-      //           // Transfer ERC20 Tokens
-      //           matic.transferERC20Tokens(token, to, amount, {
-      //             from: from, gas: 5000
-      //           }).then((res) => {
-      //             const balance = data.user.balance
-      //             amount = parseInt(balance) + parseInt(buyAmount)
-      //             const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
-      //             setLoading(false)
-      //             setUser(tempUser)
-      //             alert(`Transaction complete: hash ${res.transactionHash}`)
-      //           })
-      //       } catch(error) {
-      //         setLoading(false)
-      //         alert(error.message)
-      //       }
-      //     }
-      //   })
-      // }
-
-      const sellCoins = (e) => {
-        e.preventDefault()
-        setDialogOpen(false)
-        const { balance } = user
-        const amount = parseInt(balance) - parseInt(sellAmount)
-        if(amount >= 0) {
+        if(parseInt(buyAmount) <= 0 || buyAmount === null){
           setAlert({
             open:true,
             duration:6000,
@@ -437,138 +290,305 @@ function ProfileBox(props) {
               vertical: 'top',
               horizontal: 'center',
             },
-            message:"Make sure you don't refresh the page as it may result in a loss of crypto",
+            message:"You must enter a valid value",
             action:false
           })
-          setLoading(true)
-          const siteAccount = web3.eth.accounts.wallet.add('0x4d8c36de32a6a5bea0fda582f2253916a03fe246cb4f89f44520d6980e275f6c')
-          const tokenAmount = web3.utils.toWei((sellAmount / 10).toString(), 'ether')
-          const DAI_TOKEN_ADDRESS = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
-          const tempBalance = balance
-          const tempUser = {username: user.username, role: user.role, matches: user.matches, balance: amount}
-          let transHash = '0'
-          let status = 'Processing'
-          const type = 'Sell'
-          Auth.updateTokens(user, amount).then((data) => {
-            const { msgBody, msgError } = data.message
-            if(msgError)
-              alert(msgBody)
-          })
-          Auth.createTransaction(user,type,sellAmount).then((data) => {
-            const { msgBody, msgError } = data
-            if(msgError){
-              setAlert({
-                open:true,
-                duration:20000,
-                anchor:{
-                  vertical: 'top',
-                  horizontal: 'left',
-                },
-                message:'Transaction Error',
-                action:false
-              })
-            } else {
-                const transID = msgBody
-                cbBack.methods.collect(DAI_TOKEN_ADDRESS, tokenAmount, account).send({ from: siteAccount.address, gas: 80000 })
-                .on('transactionHash', (hash) => {
-                  transHash = hash.toString()
-                  Auth.updateTransaction(user,transID,transHash,status).then(() => {
-                  })
-                  })
-                  .on('receipt', (receipt) => {
-                  setLoading(false)
-                if(receipt.status == 0) {
-                    Auth.updateTokens(user, tempBalance).then((data) => {
-                      const { msgBody, msgError } = data.message
-                      if(msgError)
-                      status = 'Error'
-                      Auth.updateTransaction(user,transID,transHash,status).then((data) => {
-                        const { msgBody, msgError } = data
-                        if(!msgError){
-                          setAlert({
-                            open:true,
-                            duration:20000,
-                            anchor:{
-                              vertical: 'top',
-                              horizontal: 'left',
-                            },
-                            message:`Transaction Error`,
-                            action:false
-                          })
-                        }
-                      })
-                    })
-                  } else {
-                    status = 'Success'
-                    Auth.updateTransaction(user,transID,transHash,status).then((data) => {
-                      const { msgBody, msgError } = data
-                      if(!msgError){
-                        setAlert({
-                          open:true,
-                          duration:20000,
-                          anchor:{
-                            vertical: 'top',
-                            horizontal: 'left',
-                          },
-                          message:`Transaction Successful`,
-                          action:false
-                        })
-                      }
-                    })
-                  }
-                  setUser(tempUser)
-                })
-                .on('error', (error, receipt) => {
-                  Auth.updateTokens(user, tempBalance).then((data) => {
-                    const { msgBody, msgError } = data.message
-                    if(!msgError)
-                    Auth.updateTransaction(user,transID,'Error').then((data) => {
-                      const { msgBody, msgError } = data
-                      if(!msgError){
-                        setAlert({
-                          open:true,
-                          duration:20000,
-                          anchor:{
-                            vertical: 'top',
-                            horizontal: 'left',
-                          },
-                          message:`Transaction Error`,
-                          action:false
-                        })
-                      }
-                    })
-                  })
-                  setLoading(false)
-                })
-              }
-            })
-            }
-            // catch(error) {
-            //   setAlert({
-            //     open:true,
-            //     duration:6000,
-            //     anchor:{
-            //       vertical: 'bottom',
-            //       horizontal: 'left',
-            //     },
-            //     message:`Transaction Error`,
-            //     action:true
-            //   })
-            // }
-          // } 
-          else {
-            setLoading(false)
+        }
+        else {
             setAlert({
               open:true,
-              duration:20000,
+              duration:6000,
               anchor:{
                 vertical: 'top',
                 horizontal: 'center',
               },
-              message:`Cannot sell more tokens than owned`,
-              action:true
+              message:"Make sure you don't refresh the page as it may result in a loss of crypto",
+              action:false
             })
+            setDialogOpen(false)
+            setLoading(true)
+            Auth.isAuthenticated().then((data) => {
+              if(data.isAuthenticated){
+                const balance = data.user.balance
+                const amount = parseInt(balance) + parseInt(buyAmount)
+                const tokenAmount = web3.utils.toWei((buyAmount / 10).toString(), 'ether')
+                const SITE_ADDRESS = "0xc8A52C4999d703D3C84208e66E9C518de0d893ac"
+                const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
+                let transHash = '0'
+                let status = 'Processing'
+                let info = {type: 'Buy',amount: buyAmount}
+                Auth.createTransaction(info).then((data) => {
+                  const { msgBody, msgError } = data
+                  if(msgError){
+                    setAlert({
+                      open:true,
+                      duration:20000,
+                      anchor:{
+                        vertical: 'top',
+                        horizontal: 'left',
+                      },
+                      message:msgBody,
+                      action:false
+                    })
+                  } else{
+                    const transID = msgBody
+                    daiToken.methods.transfer(SITE_ADDRESS, tokenAmount).send({ from: account, gas: 80000 })
+                    .on('transactionHash', (hash) => {
+                      transHash = hash.toString()
+                      let info = {id: transID, hash: transHash, status: status}
+                      Auth.updateTransaction(info).then(() => {
+                      })
+                    })
+                    .on('receipt', (receipt) => {
+                      setLoading(false)
+                      if(receipt.status == 1) {
+                        Auth.updateTokens({amount: amount}).then((data) => {
+                          const { msgBody, msgError } = data.message
+                          if(!msgError){
+                            status = 'Success'
+                            let info = {id: transID, hash: transHash, status: status}
+                            Auth.updateTransaction(info).then(() => {
+                            const { msgBody, msgError } = data
+                            if(!msgError){
+                              setUser(tempUser)
+                              setAlert({
+                                open:true,
+                                duration:20000,
+                                anchor:{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                },
+                                message:"Transaction Successful",
+                                action:false
+                              })
+                            }
+                          })
+                          }
+                          else
+                            setAlert({
+                              open:true,
+                              duration:20000,
+                              anchor:{
+                                vertical: 'top',
+                                horizontal: 'left',
+                              },
+                              message:`Error Saving Transaction to Database`,
+                              action:false
+                            })
+                        })
+                      }
+                    })
+                    .on('error', (error, receipt) => {
+                        status = 'Error'
+                        let info = {id: transID, hash: transHash, status: status}
+                        Auth.updateTransaction(info).then(() => {
+                          const { msgBody, msgError } = data
+                          if(!msgError){
+                            setAlert({
+                              open:true,
+                              duration:20000,
+                              anchor:{
+                                vertical: 'top',
+                                horizontal: 'left',
+                              },
+                              message:`Transaction Error`,
+                              action:false
+                            })
+                            setLoading(false)
+                          }
+                        })
+                      })
+                    }
+                  })
+                }
+              })
           }
+      }
+
+      const sellCoins = (e) => {
+        e.preventDefault()
+        let dailyTotal = 0
+        Auth.getTransactions().then((data) =>{
+            const { transactions } = data
+            transactions.filter(t => t.type === 'Sell').filter(t => {
+              const transDate = new Date(t.createdAt)
+              const today = new Date()
+              return transDate.getDate() === today.getDate() &&  transDate.getMonth() === today.getMonth() && transDate.getFullYear() === today.getFullYear()
+            }).forEach(t => {
+              dailyTotal += t.amount
+            })
+            const { balance } = user
+            const amount = parseInt(balance) - parseInt(sellAmount)
+            if(parseInt(sellAmount) <= 0 || sellAmount === null){
+              setAlert({
+                open:true,
+                duration:6000,
+                anchor:{
+                  vertical: 'top',
+                  horizontal: 'center',
+                },
+                message:"You must enter a valid value",
+                action:false
+              })
+            }
+            else if(dailyTotal >= 500){
+              setAlert({
+                open:true,
+                duration:6000,
+                anchor:{
+                  vertical: 'top',
+                  horizontal: 'center',
+                },
+                message:"You've reached your daily withdraw limit",
+                action:false
+              })
+            }
+            else if(dailyTotal + parseInt(sellAmount) > 500){
+              setAlert({
+                open:true,
+                duration:6000,
+                anchor:{
+                  vertical: 'top',
+                  horizontal: 'center',
+                },
+                message:"This transaction cannot be completed since it will put you over your daily withdraw limit",
+                action:false
+              })
+            }
+            else if(amount >= 0) {
+              setAlert({
+                open:true,
+                duration:6000,
+                anchor:{
+                  vertical: 'top',
+                  horizontal: 'center',
+                },
+                message:"Make sure you don't refresh the page as it may result in a loss of crypto",
+                action:false
+              })
+              setDialogOpen(false)
+              setLoading(true)
+              const siteAccount = web3.eth.accounts.wallet.add('0x4d8c36de32a6a5bea0fda582f2253916a03fe246cb4f89f44520d6980e275f6c')
+              const tokenAmount = web3.utils.toWei((sellAmount / 10).toString(), 'ether')
+              const DAI_TOKEN_ADDRESS = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
+              const tempBalance = balance
+              const tempUser = {username: user.username, role: user.role, matches: user.matches, balance: amount}
+              let transHash = '0'
+              let status = 'Processing'
+              Auth.updateTokens({amount: amount}).then((data) => {
+                const { msgBody, msgError } = data.message
+                if(msgError)
+                  alert(msgBody)
+              })
+              let info = {type: 'Sell',amount: sellAmount}
+              Auth.createTransaction(info).then((data) => {
+                const { msgBody, msgError } = data
+                if(msgError){
+                  setAlert({
+                    open:true,
+                    duration:20000,
+                    anchor:{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    },
+                    message:'Transaction Error',
+                    action:false
+                  })
+                } else {
+                    const transID = msgBody
+                    cbBack.methods.collect(DAI_TOKEN_ADDRESS, tokenAmount, account).send({ from: siteAccount.address, gas: 80000 })
+                    .on('transactionHash', (hash) => {
+                      transHash = hash.toString()
+                      let info = {id: transID, hash: transHash, status: status}
+                      Auth.updateTransaction(info).then(() => {
+                      })
+                      })
+                      .on('receipt', (receipt) => {
+                      setLoading(false)
+                    if(receipt.status == 0) {
+                        Auth.updateTokens({amount: tempBalance}).then((data) => {
+                          const { msgBody, msgError } = data.message
+                          if(msgError)
+                          status = 'Error'
+                          let info = {id: transID, hash: transHash, status: status}
+                          Auth.updateTransaction(info).then(() => {
+                            const { msgError } = data
+                            if(!msgError){
+                              setAlert({
+                                open:true,
+                                duration:20000,
+                                anchor:{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                },
+                                message:`Transaction Error`,
+                                action:false
+                              })
+                            }
+                          })
+                        })
+                      } else {
+                        status = 'Success'
+                        let info = {id: transID, hash: transHash, status: status}
+                        Auth.updateTransaction(info).then(() => {
+                          const { msgBody, msgError } = data
+                          if(!msgError){
+                            setAlert({
+                              open:true,
+                              duration:20000,
+                              anchor:{
+                                vertical: 'top',
+                                horizontal: 'left',
+                              },
+                              message:`Transaction Successful`,
+                              action:false
+                            })
+                          }
+                        })
+                      }
+                      setUser(tempUser)
+                    })
+                    .on('error', (error, receipt) => {
+                      Auth.updateTokens({amount: tempBalance}).then((data) => {
+                        const { msgBody, msgError } = data.message
+                        if(!msgError)
+                        status = 'Error'
+                        let info = {id: transID, hash: transHash, status: status}
+                        Auth.updateTransaction(info).then(() => {
+                          const { msgBody, msgError } = data
+                          if(!msgError){
+                            setAlert({
+                              open:true,
+                              duration:20000,
+                              anchor:{
+                                vertical: 'top',
+                                horizontal: 'left',
+                              },
+                              message:`Transaction Error`,
+                              action:false
+                            })
+                          }
+                        })
+                      })
+                      setLoading(false)
+                    })
+                  }
+                })
+              }
+              else {
+                setLoading(false)
+                setAlert({
+                  open:true,
+                  duration:20000,
+                  anchor:{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  },
+                  message:`Cannot sell more tokens than owned`,
+                  action:true
+                })
+              }    
+        })
       }
 
       const logout = () => {
@@ -687,7 +707,12 @@ function ProfileBox(props) {
                     helperText={errorMessage}
                     error={inputError}
                     onInput={(e) => {checkInput(e.target.value)}}
+                    onKeyUp={(e) => {
+                         if(e.KeyboardEvent.code == 13)
+                            buyCoins(e)
+                      }}
                     autoComplete="off"
+                    autoFocus
                     className={classes.textField}
                     InputProps={{
                       startAdornment: (
@@ -696,8 +721,7 @@ function ProfileBox(props) {
                         </InputAdornment>
                       ),
                     }}/>
-                    <Typography type="subtitle1">Wallet: {accountDisplay}...</Typography>
-                    
+                    <Chip className={classes.chip} variant="outlined" size="large" mt={1} label={accountDisplay} />
                     <Typography type="subtitile1" className={classes.textField}>
                         Cost:
                     </Typography>
@@ -730,7 +754,12 @@ function ProfileBox(props) {
                     helperText={errorMessage}
                     error={inputError}
                     onInput={(e) => {checkInput(e.target.value)}}
+                    onKeyUp={(e) => {
+                         if(e.KeyboardEvent.code == 13)
+                            sellCoins(e)
+                      }}
                     autoComplete="off"
+                    autoFocus
                     className={classes.textField}
                     InputProps={{
                       startAdornment: (
@@ -739,8 +768,7 @@ function ProfileBox(props) {
                         </InputAdornment>
                       ),
                     }}/>
-                    <Typography type="subtitle1">Wallet: {accountDisplay}...</Typography>
-
+                    <Chip className={classes.chip} variant="outlined" size="large" mt={1} label={accountDisplay} />
                     <Typography type="subtitile1" className={classes.textField}>
                         Cost:
                     </Typography>

@@ -29,7 +29,7 @@ function AlertBox(props) {
     const classes = useStyles()
     
     const handleClose = (event, reason) => {
-        props.setAlert({open:false,anchor:props.alert.anchor,message:props.alert.message})
+        props.setAlert({open:false,anchor:props.alert.anchor,message:props.alert.message,icon:props.alert.icon})
     }
 
     const additionalAction = () => {

@@ -1,18 +1,18 @@
-import { Card, CardContent, Grid, Typography } from '@material-ui/core';
-import React, { useState, useEffect } from 'react'
+import { Card, Grid, Typography, TextField } from '@material-ui/core';
+import React, { useState, useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import { grey } from '@material-ui/core/colors'
-import { CloudDownload, ArrowBackIosTwoTone } from '@material-ui/icons'
-import gameScreenshot from '../images/ew-screenshot-crop.png'
-import ewCover from '../images/ew-game-cover.jpg'
+import { Edit, ArrowBackIosTwoTone, LockOpen, Done, Cancel } from '@material-ui/icons'
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
-import GameStats from './GameStats'
-import GameLeaderbaord from './GameLeaderboard'
+import Auth from '../services/Auth'
+import TransactionHistory from './TransactionHistory';
+import PasswordDialog from './PasswordDialog';
 
 const useStyles = makeStyles((theme) => ({
     tabsPanel: {
@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     statsBox: {
         background:'black',
         margin: 10,
+        padding: 10,
     },
     gamePreview: {
         width: 250,
@@ -43,8 +44,22 @@ const useStyles = makeStyles((theme) => ({
         height: 260,
         padding: 10
     },
-    gamePreviewBox: {
+    profileBox: {
+        background: 'linear-gradient(45deg, #32a883, #3290a8)',
+        padding: 10,
+        marginTop: 15
+    },
+    changePass: {
+        background: 'linear-gradient(45deg, #f51818, #8c0023)',
+        color: grey[100],
+        padding: 10,
+        marginTop: 5
+    },
+    updateInfo: {
         background: 'linear-gradient(45deg, #113C70, #3D0757)',
+        color: grey[100],
+        padding: 10,
+        marginTop: 5
     },
     gamePreviewText: {
         color: grey[300],
@@ -61,10 +76,8 @@ const useStyles = makeStyles((theme) => ({
         padding: 10
     },
     button: {
-        background: 'linear-gradient(45deg, #32a883, #3290a8)',
+        background: 'linear-gradient(45deg, #113C70, #3D0757)',
         color: grey[100],
-        marginTop: 20,
-        marginBottom: 5
     },
     center: {
         display: 'flex',
@@ -120,60 +133,129 @@ function TabPanel(props) {
     );
   }
 
-function endlessWar() {
-    const classes = useStyles()
-    return(
-        <CardContent>
-            <Grid container>
-                <Grid item sm={12} md={7}>
-                    <Typography variant="h6" className={classes.title} align="center">
-                        Endless War
-                    </Typography>
-                    <Typography variant="subtitle1" className={classes.text} align="center">
-                        For anyone who enjoys a good old top down shooter this game is for you.
-                        Endless War is a free for all where every kill earns you credits back.
-                        There are streak bonuses and progressives to give people a chance 
-                        at great rewards. A simple, yet challenging, game that can lead to potential profits.
-                        Download today and see if you have what it takes to enter the battle.
-                    </Typography>
-                    <Typography align="center">
-                        <Button
-                            className={classes.button}
-                            endIcon={<CloudDownload />} 
-                            size="large"
-                            variant="contained"
-                            href="game/V0.1.2.zip"
-                            download="Endless War">    
-                                Download Game
-                        </Button>
-                    </Typography>
-                </Grid>
-                <Grid item sm={12} md={5} className={classes.center}>
-                    <Card className={classes.gamePreviewBox}>
-                        <img src={gameScreenshot} title="Game Screenshot" className={classes.gamePreview}/>
-                        <Typography variant="subtitle2" className={classes.gamePreviewText} align="center">
-                            Screenshot
-                        </Typography>
-                    </Card>
-                </Grid>
-            </Grid>
-        </CardContent>
-    )
-}
-
 function ProfilePage(props) {
     const classes = useStyles()
+    const { user, setUser } = useContext(AuthContext)
+    const [passValue, setpassValue] = useState(0);
+    const [verified, setVerified] = useState(false);
     const [value, setValue] = useState(0);
+    const [email,setEmail] = useState(user.email)
+    const [tempEmail,setTempEmail] = useState(user.email)
+    const [username,setUsername] = useState(user.username)
+    const [tempUsername,setTempUsername] = useState(user.username)
+    const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
   
     const handleChange = (event, newValue) => {
       setValue(newValue)
+    }
+    const setLoading = (value) => {
+      props.setLoading(value)
+    }    
+    const setAlert = (value) => {
+      props.setAlert(value)
+    }
+
+    const keyPress = (e) =>{
+       if(e.keyCode == 13){
+           updateInfo()
+       }
     }
 
     const closeProfilePage = () => {
         props.setProfileOpen(false)
     }
 
+    const checkPassword = () => {
+        setPasswordDialogOpen(true)
+    }
+
+    const updateInfo = () => {
+        setLoading(true)
+        const checkUser = {username: username, email: email}
+        Auth.checkUser(checkUser).then((data) => {
+            const { msgBody, isTaken } = data
+            if(isTaken) {
+                setLoading(false)
+                setAlert({
+                    open:true,
+                    duration:6000,
+                    anchor:{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    },
+                    message:msgBody,
+                    action:false
+                })
+            }
+            else {
+                const info = {oldUser: user, newUsername: username, newEmail: email }
+                Auth.updateUser(info).then((data) => {
+                    const { msgError, msgBody } = data
+                    // alert(msgBody.user.username)
+                    if(!msgError) {
+                        const tempUser = user
+                        tempUser.username = username
+                        tempUser.email = email
+                        setUser(tempUser)
+                        setTempEmail(email)
+                        setTempUsername(username)
+                        setVerified(false)
+                        setLoading(false)
+                    }
+                })
+            }
+
+            })
+    }
+
+    const cancelUpdate = () => {
+        setEmail(tempEmail)
+        setUsername(tempUsername)
+        setVerified(false)
+    }
+
+    let updateButtonContent
+    if(!verified)
+        updateButtonContent = <Button
+            className={classes.updateInfo}
+            startIcon={<Edit />}
+            onClick={checkPassword} 
+            size="large"
+            variant="contained"
+            fullWidth>    
+                Update Info
+        </Button>
+    else
+        updateButtonContent = <React.Fragment>
+                <Button
+                    className={classes.updateInfo}
+                    startIcon={<Done />}
+                    onClick={updateInfo}
+                    size="large"
+                    variant="contained"
+                    fullWidth>    
+                        Submit
+                </Button>
+                <Button
+                    className={classes.updateInfo}
+                    startIcon={<Cancel />}
+                    onClick={cancelUpdate} 
+                    size="large"
+                    variant="contained"
+                    fullWidth>    
+                        Cancel
+                </Button>
+        </React.Fragment>
+
+
     return(
+    <React.Fragment>
+        <PasswordDialog 
+            open={passwordDialogOpen} 
+            setPasswordDialogOpen={setPasswordDialogOpen} 
+            setVerified={setVerified} 
+            setLoading={setLoading}
+            setAlert={setAlert}/>
         <Card className={classes.card}>
             <Card className={classes.statsBox}>
                 <Button
@@ -181,8 +263,7 @@ function ProfilePage(props) {
                     startIcon={<ArrowBackIosTwoTone />}
                     onClick={closeProfilePage} 
                     size="large"
-                    variant="contained"
-                    ml={0.5}>    
+                    variant="contained">    
                         Back
                 </Button>
             <div className={classes.tabsPanel}>
@@ -194,17 +275,57 @@ function ProfilePage(props) {
                     onChange={handleChange}
                     aria-label="nav tabs example"
                     >
-                    <LinkTab label="General Info" href="/general" {...a11yProps(0)} />
+                    <LinkTab label="Profile" href="/profile" {...a11yProps(0)} />
                     <LinkTab label="Transactions" href="/trans" {...a11yProps(1)} />
                     </Tabs>
                 </AppBar>
                     <TabPanel value={value} index={0}>
+                            <Grid>
+                                <Grid item md={7}>
+                                    <Card className={classes.profileBox}>
+                                        <TextField
+                                            disabled={!verified}
+                                            id="filled-disabled"
+                                            label="Username"
+                                            value={username}
+                                            onInput={(e) => {setUsername(e.target.value)}}
+                                            onKeyUp={(e) => {keyPress(e)}}
+                                            variant="filled"
+                                            fullWidth
+                                        />
+                                    </Card>
+                                    <Card className={classes.profileBox}>
+                                        <TextField
+                                            disabled={!verified}
+                                            id="filled-disabled"
+                                            label="Email"
+                                            value={email}
+                                            onInput={(e) => {setEmail(e.target.value)}}
+                                            onKeyUp={(e) => {keyPress(e)}}
+                                            variant="filled"
+                                            fullWidth
+                                        />
+                                    </Card>
+                                    {updateButtonContent}
+                                    <Button
+                                        className={classes.changePass}
+                                        startIcon={<LockOpen />}
+                                        onClick={closeProfilePage} 
+                                        size="large"
+                                        variant="contained"
+                                        fullWidth>    
+                                            Change Password
+                                    </Button>
+                                </Grid>
+                            </Grid>
                     </TabPanel>
                     <TabPanel value={value} index={1}>
+                        <TransactionHistory />
                     </TabPanel>
                 </div>
             </Card>
         </Card>
+    </React.Fragment>
     )
 }
 
