@@ -27,6 +27,14 @@ export default {
                 return { info: null }
         })
     },
+    resetPassword: () => {
+        return fetch('/user/resetPassword').then((res) => {
+            if(res.status !== 404)
+            return res.json().then((data) => data)
+            else
+            return { isTaken: false}
+        })
+    },
     updateUser: (info) => {
         return fetch(`/user/updateUser`, {
             method: "put",
@@ -45,6 +53,9 @@ export default {
             else
             return { isTaken: false}
         })
+    },
+    getUser: () => {
+        return fetch('/user/getUser').then((res) => res.json().then((data) => data))
     },
     getMatches: () => {
         return fetch('/user/getMatches').then((res) => {

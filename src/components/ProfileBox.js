@@ -167,15 +167,47 @@ function ProfileBox(props) {
         setMenuOpen(event.currentTarget);
       };
 
+      const checkTransactions = async () => {
+        await Auth.getTransactions().then((data) => {
+          const { transactions } = data
+          const trans = transactions.reverse()
+          if(trans[0].status === 'Initiated' || trans[0].status === 'Processing') {
+            setAlert({
+              open:true,
+              duration:6000,
+              anchor:{
+                vertical: 'top',
+                horizontal: 'center',
+              },
+              message:"You currently have a transaction processing. Wait just a few minutes before giving it another try",
+              action:false,
+              actionType:"Metamask"
+            })
+              throw Error
+          }
+        })
+      }
+
+      const updateBalance = async () => {
+        await Auth.getUser().then((data) => {
+          const { balance } = data.user
+          const tempUser = user
+          tempUser.balance = balance
+          setUser(tempUser)
+        })
+      }
+
       const openDialog = async () => {
         let loaded = true
         setMenuOpen(null)
         try{
+          await checkTransactions()
           await loadBlockchain()
         } catch(error) {
           loaded = false
         }
         if(loaded){
+          await updateBalance()
           setBuyAmount(0)
           setSellAmount(0)
           setDialogOpen(true)
