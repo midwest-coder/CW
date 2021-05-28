@@ -1,18 +1,19 @@
-import { Card, Grid, Typography, TextField } from '@material-ui/core';
+import { Card, Grid, Typography, TextField } from '@material-ui/core'
 import React, { useState, useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import { grey } from '@material-ui/core/colors'
 import { Edit, ArrowBackIosTwoTone, LockOpen, Done, Cancel } from '@material-ui/icons'
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
+import AppBar from '@material-ui/core/AppBar'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import Box from '@material-ui/core/Box'
 import Auth from '../services/Auth'
-import TransactionHistory from './TransactionHistory';
-import PasswordDialog from './PasswordDialog';
+import TransactionHistory from './TransactionHistory'
+import PasswordDialog from './PasswordDialog'
+import PassResetDialog from './PassResetDialog'
 
 const useStyles = makeStyles((theme) => ({
     tabsPanel: {
@@ -144,6 +145,7 @@ function ProfilePage(props) {
     const [username,setUsername] = useState(user.username)
     const [tempUsername,setTempUsername] = useState(user.username)
     const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
+    const [passResetDialogOpen, setPassResetDialogOpen] = useState(false)
   
     const handleChange = (event, newValue) => {
       setValue(newValue)
@@ -256,6 +258,11 @@ function ProfilePage(props) {
             setVerified={setVerified} 
             setLoading={setLoading}
             setAlert={setAlert}/>
+        <PassResetDialog 
+            open={passResetDialogOpen} 
+            setPassResetDialogOpen={setPassResetDialogOpen}
+            setLoading={setLoading}
+            setAlert={setAlert}/>
         <Card className={classes.card}>
             <Card className={classes.statsBox}>
                 <Button
@@ -310,7 +317,7 @@ function ProfilePage(props) {
                                     <Button
                                         className={classes.changePass}
                                         startIcon={<LockOpen />}
-                                        onClick={closeProfilePage} 
+                                        onClick={() => {setPassResetDialogOpen(true)}} 
                                         size="large"
                                         variant="contained"
                                         fullWidth>    

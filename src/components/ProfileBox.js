@@ -760,12 +760,6 @@ function ProfileBox(props) {
                     <Typography type="subtitile1">
                       <img alt="dai-logo" src={daiLogo} className={classes.daiLogo} /> {buyAmount / 10}
                     </Typography>
-                    <Typography type="subtitile1">
-                        Recieve:
-                    </Typography>
-                    <Typography type="subtitile1">
-                      <MonetizationOn className={classes.coins}/> {buyAmount}
-                    </Typography>
                   <Button 
                     className={classes.button} 
                     variant="contained" 
@@ -802,12 +796,6 @@ function ProfileBox(props) {
                     }}/>
                     <Chip className={classes.chip} variant="outlined" size="large" mt={1} label={accountDisplay} />
                     <Typography type="subtitile1" className={classes.textField}>
-                        Cost:
-                    </Typography>
-                    <Typography type="subtitile1">
-                      <MonetizationOn className={classes.coins}/> {sellAmount}
-                    </Typography>
-                    <Typography type="subtitile1">
                         Recieve:
                     </Typography>
                     <Typography type="subtitile1">

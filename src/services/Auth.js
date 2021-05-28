@@ -27,12 +27,38 @@ export default {
                 return { info: null }
         })
     },
-    resetPassword: () => {
-        return fetch('/user/resetPassword').then((res) => {
-            if(res.status !== 404)
-            return res.json().then((data) => data)
-            else
-            return { isTaken: false}
+    initiatePassReset: (email) => {
+        return fetch(`/user/initiatePassReset`, {
+            method: "put",
+            body: JSON.stringify(email),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((res) => res.json()).then((data) => {
+            return data
+        })
+    },
+    updatePassword: (info) => {
+        return fetch(`/user/updatePassword`, {
+            method: "put",
+            body: JSON.stringify(info),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((res) => res.json()).then((data) => {
+            return data
+        })
+    },
+    verifyCode: (info) => {
+        // console.log(info)
+        return fetch(`/user/verifyCode`, {
+            method: "put",
+            body: JSON.stringify(info),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((res) => res.json()).then((data) => {
+            return data
         })
     },
     updateUser: (info) => {

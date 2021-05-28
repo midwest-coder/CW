@@ -1,4 +1,4 @@
-import logo from '../images/cryptoBehemoth.png'
+import logo from '../images/cb-logo-clear.png'
 import React from 'react'
 import { AppBar, IconButton, Toolbar } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
