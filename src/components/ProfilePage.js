@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import { grey } from '@material-ui/core/colors'
-import { Edit, ArrowBackIosTwoTone, LockOpen, Done, Cancel } from '@material-ui/icons'
+import { Edit, ArrowBackIosTwoTone, Done, Cancel, Email, Lock } from '@material-ui/icons'
 import AppBar from '@material-ui/core/AppBar'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
@@ -14,6 +14,7 @@ import Auth from '../services/Auth'
 import TransactionHistory from './TransactionHistory'
 import PasswordDialog from './PasswordDialog'
 import PassResetDialog from './PassResetDialog'
+import VerifyEmailDialog from './VerifyEmailDialog'
 
 const useStyles = makeStyles((theme) => ({
     tabsPanel: {
@@ -137,7 +138,6 @@ function TabPanel(props) {
 function ProfilePage(props) {
     const classes = useStyles()
     const { user, setUser } = useContext(AuthContext)
-    const [passValue, setpassValue] = useState(0);
     const [verified, setVerified] = useState(false);
     const [value, setValue] = useState(0);
     const [email,setEmail] = useState(user.email)
@@ -146,6 +146,7 @@ function ProfilePage(props) {
     const [tempUsername,setTempUsername] = useState(user.username)
     const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
     const [passResetDialogOpen, setPassResetDialogOpen] = useState(false)
+    const [verifyEmailDialogOpen, setVerifyEmailDialogOpen] = useState(false)
   
     const handleChange = (event, newValue) => {
       setValue(newValue)
@@ -190,14 +191,14 @@ function ProfilePage(props) {
                 })
             }
             else {
-                const info = {oldUser: user, newUsername: username, newEmail: email }
+                const info = {oldUsername: user.username, newUsername: username,oldEmail: user.email, newEmail: email}
                 Auth.updateUser(info).then((data) => {
                     const { msgError, msgBody } = data
-                    // alert(msgBody.user.username)
                     if(!msgError) {
                         const tempUser = user
                         tempUser.username = username
                         tempUser.email = email
+                        tempUser.emailVerified = msgBody
                         setUser(tempUser)
                         setTempEmail(email)
                         setTempUsername(username)
@@ -215,6 +216,21 @@ function ProfilePage(props) {
         setUsername(tempUsername)
         setVerified(false)
     }
+
+    let verifyEmailContent
+    if(user.emailVerified)
+        verifyEmailContent = ''
+    else
+        verifyEmailContent = <Button
+        className={classes.updateInfo}
+        startIcon={<Email />}
+        onClick={() => {setVerifyEmailDialogOpen(true)}} 
+        size="large"
+        variant="contained"
+        fullWidth>    
+            Verify Email
+    </Button>
+
 
     let updateButtonContent
     if(!verified)
@@ -261,7 +277,10 @@ function ProfilePage(props) {
         <PassResetDialog 
             open={passResetDialogOpen} 
             setPassResetDialogOpen={setPassResetDialogOpen}
-            setLoading={setLoading}
+            setAlert={setAlert}/>
+        <VerifyEmailDialog 
+            open={verifyEmailDialogOpen} 
+            setVerifyEmailDialogOpen={setVerifyEmailDialogOpen}
             setAlert={setAlert}/>
         <Card className={classes.card}>
             <Card className={classes.statsBox}>
@@ -313,10 +332,11 @@ function ProfilePage(props) {
                                             fullWidth
                                         />
                                     </Card>
+                                    {verifyEmailContent}
                                     {updateButtonContent}
                                     <Button
                                         className={classes.changePass}
-                                        startIcon={<LockOpen />}
+                                        startIcon={<Lock />}
                                         onClick={() => {setPassResetDialogOpen(true)}} 
                                         size="large"
                                         variant="contained"

@@ -50,6 +50,10 @@ function FrontPage(props) {
     const setLoading = (value) => {
         props.setLoading(value)
     }
+  
+    const setAlert = (value) => {
+      props.setAlert(value)
+    }
 
     if(landingToggle)
         content = 
@@ -58,7 +62,7 @@ function FrontPage(props) {
             </Container>
     else {
         toggle ? 
-        content = <Login setLoading={setLoading} switchPanel={switchPanel}/>
+        content = <Login setLoading={setLoading} switchPanel={switchPanel} setAlert={setAlert}/>
         :
         content = <Signup setLoading={setLoading} switchPanel={switchPanel}/>
     }

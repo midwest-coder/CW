@@ -5,6 +5,7 @@ import { AccountCircle, Email, Lock } from '@material-ui/icons';
 import Auth from '../services/Auth'
 import { grey } from '@material-ui/core/colors'
 import { AuthContext } from '../context/AuthContext'
+import PassResetDialog from './PassResetDialog'
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
   const classes = useStyles()
   const authContext = useContext(AuthContext)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [passResetDialogOpen, setPassResetDialogOpen] = useState(false)
   const [dialogText, setDialogText] = useState('')
   const [dialogTitle, setDialogTitle] = useState('')
   const [userValue, setUserValue] = useState('')
@@ -53,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
 
   const setLoading = (value) => {
       props.setLoading(value)
+  }
+
+  const setAlert = (value) => {
+    props.setAlert(value)
   }
 
   const checkUsername = (value) => {
@@ -113,6 +119,11 @@ const useStyles = makeStyles((theme) => ({
 
     return (
       <React.Fragment>
+      <PassResetDialog 
+          open={passResetDialogOpen} 
+          setPassResetDialogOpen={setPassResetDialogOpen}
+          setLoading={setLoading}
+          setAlert={setAlert}/>
         <Dialog
           open={dialogOpen}
           onClose={handleDialogClose}
@@ -180,6 +191,13 @@ const useStyles = makeStyles((theme) => ({
                       Log In
                   </Button>
               </form>
+              <Button
+                    className={classes.purple} 
+                    variant="contained" 
+                    onClick={() => setPassResetDialogOpen(true)}
+                    fullWidth>
+                Forgot Password
+              </Button>
               <Typography type="subtitile1" align="center" className={classes.textField}>or</Typography>
               <Button
                     className={classes.purple} 

@@ -170,20 +170,22 @@ function ProfileBox(props) {
       const checkTransactions = async () => {
         await Auth.getTransactions().then((data) => {
           const { transactions } = data
-          const trans = transactions.reverse()
-          if(trans[0].status === 'Initiated' || trans[0].status === 'Processing') {
-            setAlert({
-              open:true,
-              duration:6000,
-              anchor:{
-                vertical: 'top',
-                horizontal: 'center',
-              },
-              message:"You currently have a transaction processing. Wait just a few minutes before giving it another try",
-              action:false,
-              actionType:"Metamask"
-            })
-              throw Error
+          if(transactions === 0){
+            const trans = transactions.reverse()
+            if(trans[0].status === 'Initiated' || trans[0].status === 'Processing') {
+              setAlert({
+                open:true,
+                duration:6000,
+                anchor:{
+                  vertical: 'top',
+                  horizontal: 'center',
+                },
+                message:"You currently have a transaction processing. Wait just a few minutes before giving it another try",
+                action:false,
+                actionType:"Metamask"
+              })
+                throw Error
+            }
           }
         })
       }
@@ -200,17 +202,31 @@ function ProfileBox(props) {
       const openDialog = async () => {
         let loaded = true
         setMenuOpen(null)
-        try{
-          await checkTransactions()
-          await loadBlockchain()
-        } catch(error) {
-          loaded = false
-        }
-        if(loaded){
-          await updateBalance()
-          setBuyAmount(0)
-          setSellAmount(0)
-          setDialogOpen(true)
+        if(!user.emailVerified)
+          setAlert({
+            open:true,
+            duration:6000,
+            anchor:{
+              vertical: 'top',
+              horizontal: 'center',
+            },
+            message:"In order to make a transaction your email must be verified. Go to your profile page and click the verify email button",
+            action:false,
+            actionType:"Metamask"
+          })
+        else {
+          try{
+            await checkTransactions()
+            await loadBlockchain()
+          } catch(error) {
+            loaded = false
+          }
+          if(loaded){
+            await updateBalance()
+            setBuyAmount(0)
+            setSellAmount(0)
+            setDialogOpen(true)
+          }
         }
       }
 
@@ -440,13 +456,15 @@ function ProfileBox(props) {
       const sellCoins = (e) => {
         e.preventDefault()
         let dailyTotal = 0
+        let numOfTrans = 0
         Auth.getTransactions().then((data) =>{
             const { transactions } = data
-            transactions.filter(t => t.type === 'Sell').filter(t => {
+            transactions.filter(t => t.type === 'Sell' && t.status === 'Success').filter(t => {
               const transDate = new Date(t.createdAt)
               const today = new Date()
               return transDate.getDate() === today.getDate() &&  transDate.getMonth() === today.getMonth() && transDate.getFullYear() === today.getFullYear()
             }).forEach(t => {
+              numOfTrans++
               dailyTotal += t.amount
             })
             const { balance } = user
@@ -472,6 +490,18 @@ function ProfileBox(props) {
                   horizontal: 'center',
                 },
                 message:"You've reached your daily withdraw limit",
+                action:false
+              })
+            }
+            else if(numOfTrans >= 5){
+              setAlert({
+                open:true,
+                duration:6000,
+                anchor:{
+                  vertical: 'top',
+                  horizontal: 'center',
+                },
+                message:"You've reached the daily sell transaction limit of five. Try again tomorrow",
                 action:false
               })
             }

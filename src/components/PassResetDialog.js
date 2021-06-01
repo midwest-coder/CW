@@ -1,15 +1,17 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Dialog, DialogTitle, DialogContent, Typography, DialogActions, Button, TextField, InputAdornment, Stepper, Step, StepLabel, Grid, FormControl } from '@material-ui/core'
+import { Dialog, DialogTitle, DialogContent, Typography, DialogActions, Button, TextField, InputAdornment, Stepper, Step, StepLabel, Backdrop, CircularProgress, FormControl } from '@material-ui/core'
 import { AuthContext } from '../context/AuthContext'
 import Auth from '../services/Auth'
 import { Email, VpnKey, Lock } from '@material-ui/icons'
+import Loading from './Loading'
 
 function getSteps() {
-  return ['Enter Email', 'Enter Code', 'Change Password'];
+  return ['Send Email', 'Enter Code', 'Change Password'];
 }
 
 export default function PassResetDialog(props) {
   const { user } = useContext(AuthContext)
+  const [loading, setLoading] = useState(false)
   const [emailValue, setEmailValue] = useState('')
   const [codeValue, setCodeValue] = useState('')
   const [passValue, setPassValue] = useState('')
@@ -35,10 +37,7 @@ export default function PassResetDialog(props) {
     props.setPassResetDialogOpen(false)
     handleReset()
     setLoading(false)
-    }
-    const setLoading = (value) => {
-      props.setLoading(value)
-    }    
+    }  
     const setAlert = (value) => {
       props.setAlert(value)
     }
@@ -57,7 +56,7 @@ export default function PassResetDialog(props) {
             })
         } else {
             setLoading(true)
-            Auth.initiatePassReset({email: email}).then((data) => {
+            Auth.createCode({email: email, type: 'Password'}).then((data) => {
                 setLoading(false)
                 const { msgBody, msgError } = data
                 if(!msgError) {
@@ -104,7 +103,7 @@ export default function PassResetDialog(props) {
                 })
             } else {
                 setLoading(true)
-                Auth.verifyCode({ email: emailValue, code: codeValue }).then((data) => {
+                Auth.verifyCode({ email: emailValue, type: 'Password', code: codeValue }).then((data) => {
                     setLoading(false)
                     const { msgBody, msgError } = data
                     
@@ -296,22 +295,24 @@ export default function PassResetDialog(props) {
         }
 
      return(
-        <Dialog
-            open={props.open}
-            onClose={handleDialogClose}
-            aria-labelledby="password-reset-dialog-title"
-            aria-describedby="password-reset-dialog-description"
-        >
-        <DialogTitle id="password-reset-dialog-title">
-          <Stepper activeStep={activeStep} alternativeLabel>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-        </DialogTitle>
-          {getStepContent(activeStep)}
-      </Dialog>
+       <React.Fragment>
+          <Dialog
+              open={props.open}
+              onClose={handleDialogClose}
+              aria-labelledby="password-reset-dialog-title"
+              aria-describedby="password-reset-dialog-description"
+          >
+          <DialogTitle id="password-reset-dialog-title">
+            <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+          </DialogTitle>
+            {getStepContent(activeStep)}
+        </Dialog>
+      </React.Fragment>
      )
 }

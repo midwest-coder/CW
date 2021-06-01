@@ -27,10 +27,10 @@ export default {
                 return { info: null }
         })
     },
-    initiatePassReset: (email) => {
-        return fetch(`/user/initiatePassReset`, {
-            method: "put",
-            body: JSON.stringify(email),
+    createCode: (info) => {
+        return fetch(`/user/createCode`, {
+            method: "post",
+            body: JSON.stringify(info),
             headers: {
                 'Content-Type': 'application/json'
             }

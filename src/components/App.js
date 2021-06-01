@@ -42,7 +42,7 @@ function App() {
     if(user != null){
       if(!isAuthenticated) {
         content = 
-        <FrontPage setLoading={setLoading} />
+        <FrontPage setLoading={setLoading}  setAlert={setAlert}/>
       }
       else {
         if(user.role === "admin") {
