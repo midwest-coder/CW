@@ -120,7 +120,7 @@ function ProfileBox(props) {
     const [errorMessage, setErrorMessage] = useState('')
     const [tabValue, setTabValue] = useState(0)
     // const [web3Loaded, setWeb3Loaded] = useState(true)
-    const [siteAccount, setSiteAccount] = useState(true)
+    // const [siteAccount, setSiteAccount] = useState(true)
     const [buyAmount, setBuyAmount] = useState(0)
     const [sellAmount, setSellAmount] = useState(0)
     // const [matic , setMatic] = useState({})
@@ -202,6 +202,7 @@ function ProfileBox(props) {
       const openDialog = async () => {
         let loaded = true
         setMenuOpen(null)
+        console.log(user.emailVerified)
         if(!user.emailVerified)
           setAlert({
             open:true,
@@ -290,7 +291,6 @@ function ProfileBox(props) {
         if(networkId == 137){       
 
           try{
-
             const DAI_TOKEN_ABI = [{"inputs":[{"internalType":"uint256","name":"chainId_","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"guy","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":true,"inputs":[{"indexed":true,"internalType":"bytes4","name":"sig","type":"bytes4"},{"indexed":true,"internalType":"address","name":"usr","type":"address"},{"indexed":true,"internalType":"bytes32","name":"arg1","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"arg2","type":"bytes32"},{"indexed":false,"internalType":"bytes","name":"data","type":"bytes"}],"name":"LogNote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"src","type":"address"},{"indexed":true,"internalType":"address","name":"dst","type":"address"},{"indexed":false,"internalType":"uint256","name":"wad","type":"uint256"}],"name":"Transfer","type":"event"},{"constant":true,"inputs":[],"name":"DOMAIN_SEPARATOR","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"PERMIT_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"guy","type":"address"}],"name":"deny","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"mint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"move","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"nonces","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"holder","type":"address"},{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"},{"internalType":"bool","name":"allowed","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"permit","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"pull","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"usr","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"push","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"guy","type":"address"}],"name":"rely","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"src","type":"address"},{"internalType":"address","name":"dst","type":"address"},{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"version","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"wards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]
             const DAI_TOKEN_ADDRESS = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
             const DAI_TOKEN = new userWeb3.eth.Contract(DAI_TOKEN_ABI, DAI_TOKEN_ADDRESS)
@@ -301,10 +301,10 @@ function ProfileBox(props) {
           }
             
           try{
-          const CB_BACK_ABI = [{"inputs":[{"internalType":"address","name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"},{"internalType":"address","name":"_account","type":"address"}],"name":"collect","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"recieve","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"_token","type":"address"}],"name":"checkBalance","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"}]
-          const CB_BACK_ADDRESS = "0xc8A52C4999d703D3C84208e66E9C518de0d893ac"
-          const CB_BACK = new userWeb3.eth.Contract(CB_BACK_ABI, CB_BACK_ADDRESS)
-          setCBBack(CB_BACK)
+            const CB_BACK_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]
+            const CB_BACK_ADDRESS = "0x8911E044cF5652e7d1D05D85346a6F1e343F5379"
+            const CB_BACK = new userWeb3.eth.Contract(CB_BACK_ABI, CB_BACK_ADDRESS)
+            setCBBack(CB_BACK)
           }
           catch(error) {
             alert(error.message)
@@ -360,8 +360,9 @@ function ProfileBox(props) {
                 const balance = data.user.balance
                 const amount = parseInt(balance) + parseInt(buyAmount)
                 const tokenAmount = web3.utils.toWei((buyAmount / 10).toString(), 'ether')
-                const SITE_ADDRESS = "0xc8A52C4999d703D3C84208e66E9C518de0d893ac"
-                const tempUser = {username: data.user.username, role: data.user.role, matches: data.user.matches, balance: amount}
+                const SITE_ADDRESS = "0x1674c5B65e4a1e715bfEb66B4D50f4001b551799"
+                const tempUser = data.user
+                tempUser.balance = amount
                 let transHash = '0'
                 let status = 'Processing'
                 let info = {type: 'Buy',amount: buyAmount}
@@ -530,11 +531,12 @@ function ProfileBox(props) {
               })
               setDialogOpen(false)
               setLoading(true)
-              const siteAccount = web3.eth.accounts.wallet.add('0x4d8c36de32a6a5bea0fda582f2253916a03fe246cb4f89f44520d6980e275f6c')
+              const siteAccount = web3.eth.accounts.wallet.add('d515647b0a3c81ef447440df7e46d492b03024a6f2ff8b3a2a171c805989ff79')
               const tokenAmount = web3.utils.toWei((sellAmount / 10).toString(), 'ether')
               const DAI_TOKEN_ADDRESS = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
               const tempBalance = balance
-              const tempUser = {username: user.username, role: user.role, matches: user.matches, balance: amount}
+              const tempUser = user
+              tempUser.balance = amount
               let transHash = '0'
               let status = 'Processing'
               Auth.updateTokens({amount: amount}).then((data) => {
@@ -546,6 +548,7 @@ function ProfileBox(props) {
               Auth.createTransaction(info).then((data) => {
                 const { msgBody, msgError } = data
                 if(msgError){
+                  tempUser.balance = tempBalance
                   setAlert({
                     open:true,
                     duration:20000,
@@ -553,12 +556,12 @@ function ProfileBox(props) {
                       vertical: 'top',
                       horizontal: 'left',
                     },
-                    message:'Transaction Error',
+                    message:'Create Transaction Error',
                     action:false
                   })
                 } else {
                     const transID = msgBody
-                    cbBack.methods.collect(DAI_TOKEN_ADDRESS, tokenAmount, account).send({ from: siteAccount.address, gas: 80000 })
+                    cbBack.methods.sellTokens(DAI_TOKEN_ADDRESS, tokenAmount, account).send({ from: siteAccount.address, gas: 80000 })
                     .on('transactionHash', (hash) => {
                       transHash = hash.toString()
                       let info = {id: transID, hash: transHash, status: status}
@@ -583,7 +586,7 @@ function ProfileBox(props) {
                                   vertical: 'top',
                                   horizontal: 'left',
                                 },
-                                message:`Transaction Error`,
+                                message:`Blockchain Receipt Error`,
                                 action:false
                               })
                             }
@@ -614,9 +617,10 @@ function ProfileBox(props) {
                       Auth.updateTokens({amount: tempBalance}).then((data) => {
                         const { msgBody, msgError } = data.message
                         if(!msgError)
-                        status = 'Error'
+                          status = 'Error'
                         let info = {id: transID, hash: transHash, status: status}
                         Auth.updateTransaction(info).then(() => {
+                          console.log(error)
                           const { msgBody, msgError } = data
                           if(!msgError){
                             setAlert({
@@ -626,7 +630,7 @@ function ProfileBox(props) {
                                 vertical: 'top',
                                 horizontal: 'left',
                               },
-                              message:`Transaction Error`,
+                              message:`Blockchain Transaction Error: ${error}`,
                               action:false
                             })
                           }

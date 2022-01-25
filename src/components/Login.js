@@ -191,13 +191,6 @@ const useStyles = makeStyles((theme) => ({
                       Log In
                   </Button>
               </form>
-              <Button
-                    className={classes.purple} 
-                    variant="contained" 
-                    onClick={() => setPassResetDialogOpen(true)}
-                    fullWidth>
-                Forgot Password
-              </Button>
               <Typography type="subtitile1" align="center" className={classes.textField}>or</Typography>
               <Button
                     className={classes.purple} 
@@ -205,6 +198,13 @@ const useStyles = makeStyles((theme) => ({
                     onClick={() => switchPanel()}
                     fullWidth>
                 Sign Up
+              </Button>
+              <Button
+                    className={classes.purple} 
+                    variant="contained" 
+                    onClick={() => setPassResetDialogOpen(true)}
+                    fullWidth>
+                Forgot Password
               </Button>
             </Card>
           </Grid>

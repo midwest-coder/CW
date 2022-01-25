@@ -1,5 +1,5 @@
 {
-  "homepage": "https://master.d2m2qs3gm544lh.amplifyapp.com/",
+  "homepage": "https://silentbehemoth.com/",
   "name": "crypto-wars",
   "version": "0.1.0",
   "description": "Website to interact with Crypto Wars",
@@ -43,7 +43,7 @@
     "truffle-hdwallet-provider": "^1.0.17",
     "web3": "1.2.11"
   },
-  "proxy": "http://localhost:4000",
+  "proxy": "https://cb-b.herokuapp.com/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

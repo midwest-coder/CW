@@ -5,7 +5,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { AttachMoney, Help, MeetingRoom, AccountCircle } from '@material-ui/icons'
-import { grey } from '@material-ui/core/colors'
 import { Divider } from '@material-ui/core';
 
 const StyledMenu = withStyles({

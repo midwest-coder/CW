@@ -95,8 +95,9 @@ export default function VerifyEmailDialog(props) {
                     const tempUser = user
                     tempUser.emailVerified = !msgError
                     setUser(tempUser)
+                    handleDialogClose()
                 }
-
+                setCodeValue('')
                 setAlert({
                     open:true,
                     duration:6000,
@@ -107,7 +108,6 @@ export default function VerifyEmailDialog(props) {
                     message: msgBody,
                     action:false
                 })
-                handleDialogClose()
             })
         }
         }
@@ -149,6 +149,9 @@ export default function VerifyEmailDialog(props) {
                 <DialogActions>
                 <Button type="submit" color="primary">
                     Enter
+                </Button>
+                <Button onClick={() => sendEmail(user.email)} color="primary">
+                    Resend
                 </Button>
                 <Button onClick={() => handleDialogClose()} color="primary">
                     Cancel

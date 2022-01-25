@@ -1,15 +1,15 @@
-pragma solidity ^0.7.0;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract BSBack {
-    string public name = "BS Backend";
-    // address constant DAI = 0x6b175474e89094c44da98b954eedeac495271d0f;
+contract SBTransfers {
+    string public name = "SB Transfers";
 
     address payable admin;
 
-    constructor() public {
-        admin = msg.sender;
+    constructor() {
+        admin = payable(msg.sender);
     }
     
     modifier onlyAdmin() {
@@ -18,12 +18,25 @@ contract BSBack {
         _;
     }
 
-    function deposit(address _token, uint256 _amount) external {
-        IERC20(_token).transferFrom(msg.sender, address(this), _amount);
+    function purchaseTokens(address _token, uint256 _amount) external {
+        ERC20(_token).transferFrom(address(msg.sender), address(this), _amount);
+        // transerFee(_token, _fee);
+    }
+    
+    function transerFee(address _token, uint256 _fee) internal {
+        ERC20(_token).transfer(admin, _fee);
     }
 
-    function collect(address _token, address _account, uint256 _amount) external onlyAdmin() {
-        IERC20(_token).transfer(address(_account), _amount);
+    function sellTokens(address _token, address _account, uint256 _amount) external onlyAdmin() {
+        ERC20(_token).transfer(address(_account), _amount);
+    }
+    
+    function checkBalance(address _token) external view returns (uint256 balance) {
+        return ERC20(_token).balanceOf(address(this));
+    }
+    
+    function changeAdmin(address _newAdmin) external onlyAdmin() {
+        admin = payable(_newAdmin);
     }
 
     function recieve() payable external {}
